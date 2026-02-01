@@ -36,6 +36,7 @@ class FenceConfig:
     risk_threshold: RiskLevel = RiskLevel.HIGH
     auto_kill_on_critical: bool = True
     log_all_actions: bool = True
+    offline_mode: bool = False  # Skip API calls, local validation only
 
 
 @dataclass
@@ -99,13 +100,14 @@ class RuntimeFence:
                 reasons.append(f"Would exceed spending limit (${self.config.spending_limit})")
                 risk_score += 40
 
-        # Call remote API for deeper analysis
-        try:
-            api_result = self._call_api(action, target, amount, context)
-            risk_score = max(risk_score, api_result.get("riskScore", 0))
-            reasons.extend(api_result.get("reasons", []))
-        except Exception as e:
-            logger.warning(f"API validation failed, using local only: {e}")
+        # Call remote API for deeper analysis (unless offline mode)
+        if not self.config.offline_mode:
+            try:
+                api_result = self._call_api(action, target, amount, context)
+                risk_score = max(risk_score, api_result.get("riskScore", 0))
+                reasons.extend(api_result.get("reasons", []))
+            except Exception as e:
+                logger.warning(f"API validation failed, using local only: {e}")
 
         # Determine risk level
         if risk_score >= 90:
