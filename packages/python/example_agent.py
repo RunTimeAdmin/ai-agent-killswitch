@@ -2,7 +2,7 @@
 Example: Wrapping an AI Trading Bot with Runtime Fence
 """
 
-from runtime_fence import create_fence, FencedAgent, FenceConfig, RiskLevel
+from runtime_fence import create_fence, FencedAgent, FenceConfig, RiskLevel, RuntimeFence
 
 
 # ======================

@@ -53,7 +53,7 @@ app.get('/api/v1/agents/:agentId/status', (req: Request, res: Response) => {
 
 app.post('/api/runtime/assess', async (req: Request, res: Response) => {
   const { agentId, action, context } = req.body;
-  const tx = { agentId, action, target: context?.target || 'unknown' };
+  const tx = { agentId, action, target: context?.target || 'unknown', timestamp: Date.now() };
   const result = await killSwitch.validate(tx);
   res.json({
     agentId,
@@ -216,3 +216,4 @@ const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => console.log('API running on port ' + PORT));
 
 export default app;
+
