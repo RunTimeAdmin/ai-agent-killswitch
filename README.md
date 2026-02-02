@@ -4,29 +4,37 @@
 
 $KILLSWITCH is a comprehensive safety ecosystem for AI agents, powered by Runtime Fence technology. Think of it as a kill switch for your AI - instantly stop any agent, block dangerous actions, and monitor everything in real-time.
 
-## Features
+[![Tests](https://img.shields.io/badge/tests-17%2F17%20passing-brightgreen)](https://github.com/RunTimeAdmin/ai-agent-killswitch/actions) [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE) [![Python](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/) [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)](https://www.typescriptlang.org/)
 
-- **Kill Switch** - Instantly stop any AI agent with one click
-- **Action Blocking** - Define what actions agents cannot take
-- **Target Protection** - Block access to sensitive files, APIs, or systems
-- **Spending Limits** - Control how much an agent can spend
-- **Risk Scoring** - Automatic risk assessment of every action
-- **Audit Logging** - Complete trail of all agent activity
-- **Email/SMS Alerts** - Get notified of suspicious behavior
-- **Cross-Platform** - Windows, macOS, and Linux support
+---
 
-## Quick Start
+## 🚀 Features
+
+### Core Capabilities
+
+- **🔴 Kill Switch** - Instantly stop any AI agent with one click
+- **🚫 Action Blocking** - Define what actions agents cannot take
+- **🛡️ Target Protection** - Block access to sensitive files, APIs, or systems
+- **💰 Spending Limits** - Control how much an agent can spend
+- **📊 Risk Scoring** - Automatic risk assessment of every action
+- **📝 Audit Logging** - Complete trail of all agent activity
+- **📧 Email/SMS Alerts** - Get notified of suspicious behavior
+- **🖥️ Cross-Platform** - Windows, macOS, and Linux support
+
+---
+
+## 📦 Quick Start
 
 ### Installation
 
 ```bash
-pip install runtime-fence
+pip install killswitch-agent
 ```
 
 Or clone and install:
 
 ```bash
-git clone https://github.com/Protocol14019/ai-agent-killswitch.git
+git clone https://github.com/RunTimeAdmin/ai-agent-killswitch.git
 cd ai-agent-killswitch/packages/python
 pip install -e .
 ```
@@ -67,20 +75,28 @@ def call_external_api(data):
 call_external_api({"key": "value"})
 ```
 
-### Desktop App (System Tray)
+---
+
+## 🖥️ Desktop App (System Tray)
+
+### Windows
 
 ```bash
-# Windows
 install_fence.bat
+```
 
-# Mac/Linux
+### Mac/Linux
+
+```bash
 chmod +x install_fence.sh
 ./install_fence.sh
 ```
 
 Look for the shield icon in your system tray. Right-click for options.
 
-## CLI Commands
+---
+
+## ⌨️ CLI Commands
 
 ```bash
 fence version --check    # Check for updates
@@ -91,19 +107,23 @@ fence test               # Run quick validation test
 fence start              # Launch tray app
 ```
 
-## Supported Agent Types
+---
 
-Runtime Fence includes presets for common AI agents:
+## 🤖 Supported Agent Types
+
+$KILLSWITCH includes presets for common AI agents:
 
 | Agent Type | Blocked Actions | Use Case |
-|------------|-----------------|----------|
-| Coding Assistant | exec, shell, rm, sudo | Copilot, Cursor, Aider |
-| Email Bot | send_bulk, forward_all, export | Email automation |
-| Data Analyst | delete, drop_table, export_pii | Data processing |
-| Web Browser | login, purchase, submit_form | Web scraping |
-| Autonomous Agent | spawn_agent, modify_self, execute_code | AutoGPT, BabyAGI |
+| --- | --- | --- |
+| **Coding Assistant** | exec, shell, rm, sudo | Copilot, Cursor, Aider |
+| **Email Bot** | send_bulk, forward_all, export | Email automation |
+| **Data Analyst** | delete, drop_table, export_pii | Data processing |
+| **Web Browser** | login, purchase, submit_form | Web scraping |
+| **Autonomous Agent** | spawn_agent, modify_self, execute_code | AutoGPT, BabyAGI |
 
-## Architecture
+---
+
+## 🏗️ Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────┐
@@ -112,7 +132,7 @@ Runtime Fence includes presets for common AI agents:
                           │
                           ▼
 ┌─────────────────────────────────────────────────────────┐
-│                   RUNTIME FENCE                          │
+│                   $KILLSWITCH                            │
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐     │
 │  │ Validator   │  │ Risk Scorer │  │ Kill Switch │     │
 │  └─────────────┘  └─────────────┘  └─────────────┘     │
@@ -128,12 +148,14 @@ Runtime Fence includes presets for common AI agents:
 └─────────────────────────────────────────────────────────┘
 ```
 
-## API Reference
+---
+
+## 🔌 API Reference
 
 ### REST Endpoints
 
 | Endpoint | Method | Description |
-|----------|--------|-------------|
+| --- | --- | --- |
 | `/api/runtime/assess` | POST | Validate an action |
 | `/api/runtime/kill` | POST | Activate kill switch |
 | `/api/runtime/status` | GET | Get fence status |
@@ -152,14 +174,16 @@ curl -H "Authorization: Bearer <token>" https://api.runtimefence.com/api/runtime
 curl -H "X-API-Key: ks_xxxxx" https://api.runtimefence.com/api/runtime/status
 ```
 
-## Configuration
+---
+
+## ⚙️ Configuration
 
 ### Environment Variables
 
 ```bash
 # API
-RUNTIME_FENCE_API_URL=http://localhost:3001
-RUNTIME_FENCE_API_KEY=your_api_key
+KILLSWITCH_API_URL=http://localhost:3001
+KILLSWITCH_API_KEY=your_api_key
 
 # Alerts
 SMTP_HOST=smtp.gmail.com
@@ -186,11 +210,13 @@ Access the web dashboard at `http://localhost:3000/settings` to configure:
 - Auto-kill settings
 - Email/SMS alerts
 
-## Development
+---
+
+## 🛠️ Development
 
 ```bash
 # Clone repo
-git clone https://github.com/Protocol14019/ai-agent-killswitch.git
+git clone https://github.com/RunTimeAdmin/ai-agent-killswitch.git
 cd ai-agent-killswitch
 
 # Install dependencies
@@ -203,7 +229,9 @@ npm run dev
 npm test
 ```
 
-## Project Structure
+---
+
+## 📁 Project Structure
 
 ```
 ai-agent-killswitch/
@@ -219,16 +247,119 @@ ai-agent-killswitch/
 └── docs/                 # Documentation
 ```
 
-## License
+---
 
-MIT License - see [LICENSE](LICENSE) for details.
+## 🌐 About
 
-## Links
+Built by **RunTimeAdmin** | David Cooper | CCIE #14019
 
-- [Documentation](https://github.com/RunTimeAdmin/ai-agent-killswitch/wiki)
-- [Issues](https://github.com/RunTimeAdmin/ai-agent-killswitch/issues)
-- [Website](https://runtimefence.com)
+**Related Projects:**
+
+- 📖 [The AI Agent Kill Switch Book](https://runtimefence.com/books)
+- 🛡️ [$KILLSWITCH Documentation](https://github.com/RunTimeAdmin/ai-agent-killswitch/wiki)
+- 🔴 [$KILLSWITCH Token](https://runtimefence.com/killswitch)
+
+**Why This Matters:**
+
+> "When AI agents go rogue in Kubernetes, you need a kill switch. Not a button. A network-level containment system."
+
+As Fortune, Palo Alto Networks, and Andrej Karpathy warn of the emerging AI security crisis, we're building real solutions—not just launching tokens.
+
+$KILLSWITCH provides the guardrails that prevent AI agents from causing catastrophic damage, while the token enables community governance and sustainable development of the ecosystem.
 
 ---
 
-$KILLSWITCH - Because every AI needs an off switch.
+## 📜 License
+
+MIT License - see [LICENSE](LICENSE) for details.
+
+---
+
+## 🔗 Links
+
+- **Website:** [runtimefence.com](https://runtimefence.com)
+- **Documentation:** [GitHub Wiki](https://github.com/RunTimeAdmin/ai-agent-killswitch/wiki)
+- **Twitter:** [@RunTimeAdmin](https://twitter.com/RunTimeAdmin)
+- **Book:** [The AI Agent Kill Switch](https://runtimefence.com/books/ai-agent-kill-switch)
+
+---
+
+## ⚡ Quick Demo
+
+```python
+# Stop an agent from deleting files
+from runtime_fence import RuntimeFence
+
+fence = RuntimeFence()
+result = fence.validate("delete", "production_database.sql")
+# Returns: {"allowed": False, "reasons": ["Action 'delete' is blocked"]}
+
+# Get risk score for a transaction
+result = fence.validate("transfer", "0x...", amount=1000000)
+# Returns: {"allowed": False, "risk_score": 95, "reasons": ["High-value transfer blocked"]}
+
+# Emergency stop
+fence.kill("Suspicious activity detected")
+# All agent operations halted immediately
+```
+
+---
+
+**🛡️ Protect your AI. Before it protects itself.**
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+---
+
+## 📊 Status
+
+- [x] Core kill switch engine
+- [x] Python SDK
+- [x] TypeScript SDK
+- [x] REST API
+- [x] Web dashboard
+- [x] CLI tools
+- [x] Desktop tray app
+- [x] Audit logging
+- [x] Risk scoring
+- [ ] Mobile app (coming soon)
+- [ ] $KILLSWITCH token integration (coming soon)
+
+---
+
+## 🎯 Roadmap
+
+### Phase 1: Core Platform ✅
+
+- Runtime Fence engine
+- Python and TypeScript SDKs
+- REST API
+- Web dashboard
+
+### Phase 2: Enhanced Features 🚧
+
+- Mobile app (iOS/Android)
+- $KILLSWITCH token governance
+- Community audit marketplace
+- Advanced analytics
+
+### Phase 3: Ecosystem 📋
+
+- Third-party integrations
+- Plugin marketplace
+- Enterprise features
+- Multi-agent orchestration
+
+---
+
+**$KILLSWITCH - Because every AI needs an off switch.**
