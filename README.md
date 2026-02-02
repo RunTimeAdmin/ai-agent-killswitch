@@ -1,8 +1,8 @@
-# Runtime Fence
+# $KILLSWITCH
 
-**AI Agent Safety Control - Kill switch and guardrails for AI agents**
+**AI Agent Safety Control - Emergency kill switch and guardrails for AI agents**
 
-Runtime Fence is a security layer that wraps around AI agents, monitoring and controlling their actions in real-time. Think of it as a fence around your AI - every action must pass through it before reaching the outside world.
+$KILLSWITCH is a comprehensive safety ecosystem for AI agents, powered by Runtime Fence technology. Think of it as a kill switch for your AI - instantly stop any agent, block dangerous actions, and monitor everything in real-time.
 
 ## Features
 
@@ -225,10 +225,10 @@ MIT License - see [LICENSE](LICENSE) for details.
 
 ## Links
 
-- [Documentation](https://github.com/Protocol14019/ai-agent-killswitch/wiki)
-- [Issues](https://github.com/Protocol14019/ai-agent-killswitch/issues)
+- [Documentation](https://github.com/RunTimeAdmin/ai-agent-killswitch/wiki)
+- [Issues](https://github.com/RunTimeAdmin/ai-agent-killswitch/issues)
 - [Website](https://runtimefence.com)
 
 ---
 
-Built with security in mind. Protect your AI agents today.
+$KILLSWITCH - Because every AI needs an off switch.
