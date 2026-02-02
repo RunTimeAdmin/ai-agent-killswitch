@@ -332,8 +332,39 @@ We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guid
 - [x] Desktop tray app
 - [x] Audit logging
 - [x] Risk scoring
+- [x] USD Subscriptions (Stripe)
+- [x] Crypto payments (SOL/USDC)
+- [x] $KILLSWITCH token utility
+- [x] Token-weighted governance
+- [x] Usage tracking & limits
 - [ ] Mobile app (coming soon)
-- [ ] $KILLSWITCH token integration (coming soon)
+
+---
+
+## 💰 $KILLSWITCH Token
+
+**Contract:** `56o8um92XU8QMr1FsSj4nkExEkgKe56PBTAMqCAzmoon`
+
+[Buy on Jupiter](https://jup.ag/tokens/56o8um92XU8QMr1FsSj4nkExEkgKe56PBTAMqCAzmoon)
+
+### Token Holder Benefits
+
+| Holdings | Discount | Governance |
+|----------|----------|------------|
+| 1,000+ | - | Vote on proposals |
+| 10,000+ | 10% off | Vote on proposals |
+| 100,000+ | 20% off | Vote on proposals |
+| 1,000,000+ | 40% off | 2x voting power |
+
+### Subscription Tiers
+
+| Tier | Price | With Max Discount |
+|------|-------|-------------------|
+| Basic | $5/mo | $3/mo |
+| Pro | $50/mo | $30/mo |
+| Team | $250/mo | $150/mo |
+| Enterprise | $1,000/mo | $600/mo |
+| VIP | $5,000/mo | $3,000/mo |
 
 ---
 
@@ -346,15 +377,17 @@ We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guid
 - REST API
 - Web dashboard
 
-### Phase 2: Enhanced Features 🚧
+### Phase 2: Monetization ✅
+
+- USD subscriptions (Stripe)
+- Crypto payments (SOL/USDC)
+- $KILLSWITCH token utility
+- Token-weighted governance
+- Usage-based tier limits
+
+### Phase 3: Ecosystem 🚧
 
 - Mobile app (iOS/Android)
-- $KILLSWITCH token governance
-- Community audit marketplace
-- Advanced analytics
-
-### Phase 3: Ecosystem 📋
-
 - Third-party integrations
 - Plugin marketplace
 - Enterprise features
