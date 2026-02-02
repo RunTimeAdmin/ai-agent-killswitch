@@ -1,10 +1,135 @@
-node_modules
-.next
-dist
-.turbo
-coverage
-*.log
+# $KILLSWITCH .gitignore
+# Security-focused configuration
+
+# ================================
+# SECRETS & ENVIRONMENT
+# ================================
 .env
 .env.local
+.env.production
 .env.*.local
+.env.development
+.env.test
+
+# Secret files
+secrets/
+*.key
+*.pem
+*.p12
+*.pfx
+*.crt
+*.cer
+private-keys/
+stripe-webhook-secret.json
+crypto-private-keys.json
+
+# ================================
+# PAYMENT PROCESSING
+# ================================
+payment-config.json
+stripe-config.json
+twilio-config.json
+
+# ================================
+# DATABASE
+# ================================
+*.sql.bak
+database-backups/
+db-dumps/
+
+# ================================
+# INFRASTRUCTURE
+# ================================
+terraform/
+terraform.tfstate
+terraform.tfstate.backup
+*.tfvars
+kubernetes/secrets/
+docker-compose.override.yml
+.docker/
+
+# ================================
+# AUDIT & SECURITY
+# ================================
+audit-reports/
+vulnerability-scans/
+pentest-results/
+security-findings/
+*.audit
+
+# ================================
+# ADMIN TOOLS
+# ================================
+admin-config.json
+internal-tools/
+
+# ================================
+# LOGS
+# ================================
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ================================
+# BUILD & DEPENDENCIES
+# ================================
+node_modules/
+.next/
+out/
+dist/
+build/
+*.tsbuildinfo
+.turbo/
+
+# ================================
+# PYTHON
+# ================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+ENV/
+.venv/
+*.egg-info/
+.eggs/
+htmlcov/
+.coverage
+.pytest_cache/
+.mypy_cache/
+
+# ================================
+# OS FILES
+# ================================
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# ================================
+# IDE
+# ================================
+.vscode/settings.json
+.vscode/launch.json
+.idea/
+*.swp
+*.swo
+*.sublime-workspace
+*.sublime-project
+
+# ================================
+# MISC
+# ================================
+*.bak
+*.tmp
+*.temp
+.cache/
+coverage/
+.nyc_output/
