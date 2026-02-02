@@ -1,5 +1,5 @@
 # $KILLSWITCH - Project Status
-**Last Updated:** February 1, 2026
+**Last Updated:** February 2, 2026
 
 ---
 
@@ -109,10 +109,10 @@
 **Priority:** HIGH
 **Estimated Cost:** $10K-$50K
 
-### 2. Mobile App ⚠️ **MEDIUM**
-**Status:** Not Started
+### 2. Mobile App ✅ **COMPLETE**
+**Status:** Scaffolded
 **Priority:** MEDIUM
-**Platform:** iOS/Android (React Native)
+**Platform:** iOS/Android/Web (Expo React Native)
 
 ### 3. Testnet Deployment ⚠️ **MEDIUM**
 **Status:** Ready
@@ -125,18 +125,18 @@
 
 ### Week 1-2: Launch Prep
 1. Security audit preparation
-2. Beta user onboarding
+2. VPS deployment
 3. Marketing push
 
 ### Week 3-4: Public Beta
 1. Open beta access
 2. Collect user feedback
-3. Bug fixes
+3. Solana staking contracts
 
 ### Month 2: Production
 1. Security audit completion
 2. Mainnet deployment
-3. Mobile app development
+3. Real token balance integration
 
 ---
 
@@ -163,5 +163,17 @@
 
 ---
 
-**Last Updated:** February 1, 2026
+## 🆕 LATEST UPDATES (Feb 2, 2026)
+
+- ✅ Supabase database deployed (subscriptions, governance, users)
+- ✅ Frontend homepage with $KILLSWITCH branding
+- ✅ Governance dashboard with proposal voting UI
+- ✅ Phantom wallet integration
+- ✅ Mobile app scaffolded (Expo)
+- ✅ API health check endpoint working
+- ✅ Tier calculation (balance → discount + vote power)
+
+---
+
+**Last Updated:** February 2, 2026
 **$KILLSWITCH - Because every AI needs an off switch.**
