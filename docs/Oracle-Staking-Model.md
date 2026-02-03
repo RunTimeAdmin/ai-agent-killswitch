@@ -74,11 +74,27 @@ Oracles lose stake when they fail the network.
 
 | Violation | Penalty | Description |
 |-----------|---------|-------------|
-| **False Positive** | 1% of stake | Killed a compliant agent |
+| **False Positive** | 5% of stake | Killed a compliant agent |
 | **Missed Kill** | 2% of stake | Failed to respond to valid kill request |
-| **Collusion** | 50% of stake | Coordinated false kills |
-| **Downtime** | 0.1%/hour | Offline during SLA window |
+| **Collusion** | 100% of stake | Coordinated false kills + permanent ban |
+| **Downtime** | 0.1% per 5min | Offline during SLA window |
 | **Malicious Kill** | 100% of stake | Intentionally killed agent for profit |
+
+### Slashing Distribution (Burn Mechanism)
+
+Slashed funds are NOT fully redistributed. A portion is burned for deflationary pressure.
+
+```
+Slash Distribution:
+├── 60% → Victim Compensation (paid to affected agent owner)
+├── 25% → Insurance Pool (reserves)
+└── 15% → BURNED (removed from circulation)
+```
+
+**Example:** Oracle slashed 100,000 $KILLSWITCH for false positive:
+- 60,000 → Agent owner (compensation)
+- 25,000 → Insurance Pool
+- 15,000 → Burned forever
 
 ### Slashing Process
 
@@ -95,33 +111,53 @@ Oracles lose stake when they fail the network.
    ↓
 4. Execution
    - Stake slashed
-   - Funds go to Insurance Pool
+   - Distribution: 60% victim / 25% pool / 15% burned
 ```
 
 ---
 
 ## Oracle Operations
 
-### Technical Requirements
+### Technical Requirements (Sentinel Standard)
+
+Oracles must meet the "Sentinel" standard. This is not running on a Raspberry Pi.
 
 ```yaml
-# Minimum Oracle Node Specs
+# Sentinel Oracle Node Specs
+infrastructure:
+  runtime: Kubernetes v1.28+
+  cni: Cilium (required for eBPF enforcement)
+  kernel: Linux 5.15+ (required for advanced eBPF hooks)
+  
 hardware:
-  cpu: 8 cores
-  ram: 32GB
-  storage: 500GB SSD
-  network: 1Gbps dedicated
+  cpu: 16 cores (dedicated)
+  ram: 64GB ECC
+  storage: 1TB NVMe SSD
+  network: 10Gbps dedicated
 
 software:
   os: Ubuntu 22.04 LTS
-  runtime: Docker 24.0+
-  killswitch_node: v1.0.0+
+  sentinel_engine: v1.0.0+ (from official repo)
+  spire_agent: v1.8.0+
+  cilium: v1.14+
 
 network:
+  latency_to_spire_server: <50ms RTT
   latency_to_gateway: <50ms
   uptime_sla: 99.9%
-  geographic_redundancy: recommended
+  geographic_redundancy: required for Gold+
+
+ebpf_capabilities:
+  - kprobe/kretprobe hooks
+  - tracepoint monitoring
+  - XDP packet filtering
+  - cgroup/socket filtering
 ```
+
+**Why These Requirements:**
+- **Kubernetes + Cilium:** Network policy enforcement at kernel speed
+- **Linux 5.15+:** Required for BPF CO-RE and advanced tracing
+- **<50ms to SPIRE:** SVID revocation must propagate instantly
 
 ### Running an Oracle
 
@@ -269,16 +305,57 @@ Fee Distribution:
 
 ---
 
+## Guardian Multisig (Emergency Brake)
+
+In the event of a catastrophic protocol bug (e.g., Oracles killing everything), the network has an emergency stop.
+
+### Trigger Conditions
+
+| Trigger | Mechanism | Speed |
+|---------|-----------|-------|
+| **Guardian Multisig** | 5-of-7 signatures | Instant |
+| **Supermajority Vote** | 66% token holders | 24 hours |
+| **Cascade Detection** | >10 kills/minute network-wide | Automatic |
+
+### Guardian Council
+
+7 elected Guardians hold multisig keys. Any 5 can trigger Global Pause.
+
+**Guardian Requirements:**
+- Minimum 1,000,000 $KILLSWITCH staked
+- 6-month minimum tenure as Oracle
+- Reputation score >90
+- Geographic diversity (no 2 Guardians same region)
+
+**Guardian Election:**
+- Annual vote by token holders
+- 51% approval required
+- Maximum 2 consecutive terms
+
+### Global Pause Actions
+
+```
+When Global Pause triggered:
+1. All slashing logic suspended
+2. All Cilium policies reverted to "Monitor Mode" (log only, no kill)
+3. All pending kills frozen
+4. 72-hour investigation window
+5. Guardian vote to resume or extend pause
+```
+
+---
+
 ## Security Considerations
 
 ### Attack Vectors & Mitigations
 
 | Attack | Risk | Mitigation |
 |--------|------|------------|
-| Oracle Collusion | HIGH | Geographic distribution, stake slashing |
+| Oracle Collusion | HIGH | Geographic distribution, stake slashing, burn |
 | Stake Manipulation | MEDIUM | Lock periods, gradual unstaking |
 | DDoS on Oracles | MEDIUM | Redundancy, CDN protection |
 | False Positive Farming | LOW | Reputation system, slashing |
+| Protocol Bug | CRITICAL | Guardian Multisig emergency brake |
 
 ### Network Health Metrics
 
@@ -288,6 +365,7 @@ Fee Distribution:
 | Geographic Spread | >5 regions | 3-5 | <3 |
 | Avg Response Time | <200ms | 200-500ms | >500ms |
 | Consensus Success | >99% | 95-99% | <95% |
+| Burn Rate (30d) | <0.1% supply | 0.1-0.5% | >0.5% |
 
 ---
 
