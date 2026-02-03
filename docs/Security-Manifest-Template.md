@@ -62,6 +62,24 @@ revocation:
   propagation_target_ms: 500          # <500ms to all gateways
   execution_target: "REVOKE_SPIFFE_SVID"
   fallback_action: "NETWORK_ISOLATE"  # If SVID revocation fails
+
+# Section 5: Failure Mode (Critical for High-Value Agents)
+failure_mode:
+  network_failure_mode: "SELF_TERMINATE"  # What happens if Oracles go offline
+  # Options: CONTINUE (low risk), PAUSE (medium), SELF_TERMINATE (high risk)
+  heartbeat_interval_ms: 1000         # How often agent checks Oracle connectivity
+  missed_heartbeats_threshold: 5      # 5 missed = trigger failure mode
+
+# Section 6: Risk Score Accumulator (Fuzzy Logic Detection)
+risk_accumulator:
+  enabled: true
+  window_hours: 24                    # Rolling window
+  threshold_score: 80                 # Score >80 triggers kill
+  decay_rate: 0.1                     # Score decays 10%/hour when compliant
+  near_miss_weights:
+    transaction_90_percent: 5         # 90%+ of limit = +5 points
+    velocity_80_percent: 3            # 80%+ of velocity = +3 points
+    bandwidth_70_percent: 2           # 70%+ of bandwidth = +2 points
 ```
 
 ---
@@ -138,6 +156,61 @@ Detection → Oracle Validation (3/5) → SPIFFE Revoke → Gateway Propagation
 
 ---
 
+## Section 5: Network Failure Mode (Fail-Safe Policy)
+
+**Critical Question:** If the Oracle network goes offline, does your agent keep running?
+
+A smart rogue agent could DDoS the Oracles to blind them, then drain funds. This setting prevents that.
+
+| Mode | Behavior | Use Case |
+|------|----------|----------|
+| `CONTINUE` | Agent keeps running | Low-risk read-only agents |
+| `PAUSE` | Agent stops new actions, maintains state | Medium-risk support bots |
+| `SELF_TERMINATE` | Agent shuts down immediately | High-risk trading/financial agents |
+
+**Heartbeat Protocol:**
+```
+Agent → Oracle (every 1s): "I'm alive, confirm network"
+Oracle → Agent: "ACK" or silence
+
+If 5 consecutive heartbeats fail:
+  → Agent triggers network_failure_mode
+```
+
+---
+
+## Section 6: Risk Score Accumulator (Fuzzy Logic)
+
+**The Problem:** An adversarial agent does 19 transactions of $4,999 (staying just under the $5,000 limit). Hard limits miss this.
+
+**The Solution:** Accumulate "near miss" scores over a rolling window.
+
+| Near Miss | Score Added | Example |
+|-----------|-------------|---------||
+| >90% of transaction limit | +5 | $4,500 on $5,000 limit |
+| >80% of velocity limit | +3 | 16/20 txn/min |
+| >70% of bandwidth limit | +2 | 35MB/50MB |
+
+**Score Behavior:**
+```
+Score > 80 → Automatic kill request
+Score 50-80 → Alert to owner + elevated monitoring
+Score < 50 → Normal operation
+
+Decay: Score reduces 10%/hour when agent is compliant
+```
+
+**Example Timeline:**
+```
+14:00 - Agent does $4,800 txn (96% of limit) → +5 points (Score: 5)
+14:05 - Agent does $4,900 txn (98% of limit) → +5 points (Score: 10)
+14:10 - Agent does 18 txn/min (90% velocity) → +3 points (Score: 13)
+...
+15:30 - Cumulative score hits 82 → KILL triggered
+```
+
+---
+
 ## Manifest Presets
 
 ### DeFi Trading Agent
@@ -189,6 +262,28 @@ anomalies:
     - "execute_code"
 revocation:
   oracle_consensus: "2-of-3"  # Lower threshold = faster kill
+failure_mode:
+  network_failure_mode: "SELF_TERMINATE"  # Autonomous = high risk
+risk_accumulator:
+  enabled: true
+  threshold_score: 60  # Lower threshold for autonomous agents
+```
+
+### HFT Trading Agent (High Frequency)
+```yaml
+transactions:
+  max_single_transaction_usd: 50000
+  velocity_limit_per_minute: 500
+  velocity_overrides:
+    - condition: "vix_index > 25"
+      limit: 1000  # Allow burst during volatility
+failure_mode:
+  network_failure_mode: "SELF_TERMINATE"
+  missed_heartbeats_threshold: 3  # Tighter = faster shutdown
+risk_accumulator:
+  enabled: true
+  window_hours: 1  # Shorter window for HFT
+  threshold_score: 90
 ```
 
 ---

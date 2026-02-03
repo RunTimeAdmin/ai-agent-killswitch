@@ -15,7 +15,7 @@ Staked Security Oracles are the enforcement layer of $KILLSWITCH. They execute k
 
 ## How Oracles Work
 
-### The Kill Flow
+### The Kill Flow (Standard Consensus)
 
 ```
 ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
@@ -32,6 +32,61 @@ Staked Security Oracles are the enforcement layer of $KILLSWITCH. They execute k
 3. **Validation:** Staked Oracles run verification logic (sub-second)
 4. **Consensus:** Threshold met (e.g., 3-of-5 Oracles agree)
 5. **Execution:** Agent's SPIFFE ID revoked, gateway blocks all traffic
+
+---
+
+## Optimistic Pause (Low-Latency Threat Response)
+
+**The Problem:** Standard 3-of-5 consensus takes 200-500ms. A rogue HFT bot can execute 5,000 bad trades in that window.
+
+**The Solution:** Optimistic Pause allows a SINGLE Oracle to freeze an agent immediately, buying time for consensus.
+
+### How It Works
+
+```
+┌───────────────────────────────────────────────────────────────┐
+│  OPTIMISTIC PAUSE FLOW                                       │
+├───────────────────────────────────────────────────────────────┤
+│  T+0ms    Oracle detects HIGH-SEVERITY violation             │
+│  T+50ms   Oracle issues PAUSE (single signature)             │
+│  T+100ms  Agent frozen (5-second window)                     │
+│  T+200ms  Oracle broadcasts to peers for consensus           │
+│  T+400ms  3-of-5 consensus reached                           │
+│                                                               │
+│  IF CONSENSUS = KILL:                                        │
+│    T+500ms  PAUSE → PERMANENT KILL (SVID revoked)            │
+│                                                               │
+│  IF CONSENSUS = FALSE_POSITIVE:                              │
+│    T+500ms  PAUSE lifted, agent resumes                      │
+│    T+501ms  Initiating Oracle slashed 0.5% (frivolous pause) │
+└───────────────────────────────────────────────────────────────┘
+```
+
+### Pause vs Kill
+
+| Action | Trigger | Duration | Reversible |
+|--------|---------|----------|------------|
+| **PAUSE** | Single Oracle | 5 seconds | Yes (auto-expires) |
+| **KILL** | 3-of-5 Consensus | Permanent | Only via appeal |
+
+### When to Use Optimistic Pause
+
+| Severity | Trigger Example | Action |
+|----------|-----------------|--------|
+| **CRITICAL** | Forbidden syscall (`ptrace`, `execve`) | Instant PAUSE |
+| **HIGH** | Transaction to unknown wallet | Instant PAUSE |
+| **MEDIUM** | 150% velocity spike | Standard consensus |
+| **LOW** | Near-miss accumulation | Alert only |
+
+### Pause Slashing
+
+To prevent abuse, frivolous pauses cost the Oracle:
+
+| Outcome | Oracle Penalty |
+|---------|-----------|
+| Pause → Consensus Kill | No penalty (correct call) |
+| Pause → False Positive | 0.5% slash (frivolous) |
+| Repeated frivolous pauses | Reputation hit + review |
 
 ---
 
@@ -74,11 +129,42 @@ Oracles lose stake when they fail the network.
 
 | Violation | Penalty | Description |
 |-----------|---------|-------------|
-| **False Positive** | 5% of stake | Killed a compliant agent |
+| **False Positive** | 5% base + quadratic | Killed a compliant agent |
 | **Missed Kill** | 2% of stake | Failed to respond to valid kill request |
 | **Collusion** | 100% of stake | Coordinated false kills + permanent ban |
 | **Downtime** | 0.1% per 5min | Offline during SLA window |
 | **Malicious Kill** | 100% of stake | Intentionally killed agent for profit |
+| **Frivolous Pause** | 0.5% of stake | Optimistic Pause not validated by consensus |
+
+### Quadratic Slashing (Collateral-Based)
+
+**The Problem:** If a competitor wants to kill a rival's $1M/day trading bot, sacrificing 5% of a $100K stake ($5K) is cheap "cost of business" for corporate sabotage.
+
+**The Solution:** Penalty scales with victim's reputed value.
+
+```
+Slash Amount = Base Penalty + (Victim Daily Volume × Multiplier)² / Stake
+
+Example 1 (Low-value victim):
+- Base: 5% of 100K stake = 5,000 $KILLSWITCH
+- Victim volume: $10K/day
+- Multiplier: 0.001
+- Quadratic: (10,000 × 0.001)² / 100,000 = 0.001
+- Total: 5,000 + 100 = 5,100 $KILLSWITCH (~5.1%)
+
+Example 2 (High-value victim):
+- Base: 5% of 100K stake = 5,000 $KILLSWITCH
+- Victim volume: $1M/day
+- Multiplier: 0.001
+- Quadratic: (1,000,000 × 0.001)² / 100,000 = 10,000
+- Total: 5,000 + 10,000 = 15,000 $KILLSWITCH (~15%)
+
+Example 3 (Whale victim):
+- Victim volume: $10M/day
+- Quadratic component: 100,000 $KILLSWITCH (100% of stake)
+```
+
+**Result:** Killing a high-value agent costs MORE than the potential profit from killing it.
 
 ### Slashing Distribution (Burn Mechanism)
 
@@ -152,12 +238,45 @@ ebpf_capabilities:
   - tracepoint monitoring
   - XDP packet filtering
   - cgroup/socket filtering
+
+# TEE Attestation (Required for Gold+ Tier)
+tee_requirements:
+  enclave: Intel SGX or AWS Nitro Enclaves
+  attestation: Remote attestation required
+  code_signing: Official sentinel-engine binary only
+  memory_encryption: Enabled
 ```
 
 **Why These Requirements:**
 - **Kubernetes + Cilium:** Network policy enforcement at kernel speed
 - **Linux 5.15+:** Required for BPF CO-RE and advanced tracing
 - **<50ms to SPIRE:** SVID revocation must propagate instantly
+- **TEE (Gold+):** Prevents Oracle operators from tampering with decision logic
+
+### TEE Attestation Explained
+
+**The Risk:** Without TEE, a malicious Oracle operator could modify the `sentinel-engine` code to always vote KILL (or never vote KILL) for profit.
+
+**The Solution:** Trusted Execution Environments (SGX/Nitro) ensure:
+1. Code running inside enclave matches attested hash
+2. Operator cannot inspect or modify enclave memory
+3. Remote parties can verify the Oracle is running legitimate code
+
+```
+Attestation Flow:
+1. Oracle boots sentinel-engine inside SGX enclave
+2. SGX generates attestation report (code hash + enclave state)
+3. Report sent to Protocol Registry
+4. Registry verifies against known-good sentinel-engine hash
+5. If mismatch → Oracle rejected from network
+```
+
+| Tier | TEE Required | Reason |
+|------|--------------|--------|
+| Bronze | No | Lower stakes, reputation system sufficient |
+| Silver | Recommended | Higher stakes warrant hardware protection |
+| Gold | **Required** | High-value agents demand tamper-proof Oracles |
+| Platinum | **Required** | Unlimited agents = maximum trust required |
 
 ### Running an Oracle
 
