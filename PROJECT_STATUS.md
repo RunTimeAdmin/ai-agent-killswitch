@@ -188,11 +188,15 @@
 - [ ] Bug fixes & polish
 - [ ] Analytics dashboard
 
-### Phase 6: Security Audit (Month 2)
+### Phase 6: Security Hardening (Month 2)
+- [ ] Fail-mode strategy (CLOSED/CACHED/OPEN) - P1
+- [ ] Hard kill escalation (SIGTERM → SIGKILL) - P1
+- [ ] Behavioral thresholds (exfiltration detection) - P2
+- [ ] Network-level kill (iptables/pf/netsh) - P2
+- [ ] Package integrity verification (bypass protection) - P2
+- [ ] Intent analysis via Shadow LLM - P3
 - [ ] Professional security audit ($10K-$50K)
-- [ ] Audit findings remediation
 - [ ] Mainnet deployment
-- [ ] Public launch
 
 ### Phase 7: Enterprise Features (Month 3+)
 - [ ] SSO integration (SAML/OIDC)
@@ -292,6 +296,21 @@
 | Governance | Token voting | None | None | None |
 | Auto-Kill | Circuit breaker | None | None | None |
 | Author Expertise | SPIFFE book author | N/A | N/A | N/A |
+
+---
+
+## 🔒 SECURITY HARDENING PRIORITIES
+
+| Priority | Issue | Effort | Status |
+|----------|-------|--------|--------|
+| P1 | Fail-Mode Strategy | 2 hours | ⬜ Pending |
+| P1 | Hard Kill (SIGKILL) | 1 hour | ⬜ Pending |
+| P2 | Behavioral Thresholds | 4 hours | ⬜ Pending |
+| P2 | Network-Level Kill | 4 hours | ⬜ Pending |
+| P2 | Bypass Protection | 8 hours | ⬜ Pending |
+| P3 | Intent Analysis (LLM) | 8 hours | ⬜ Pending |
+
+**Full details:** [SECURITY_HARDENING_ROADMAP.md](./SECURITY_HARDENING_ROADMAP.md)
 
 ---
 
