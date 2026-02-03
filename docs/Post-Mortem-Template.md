@@ -1,305 +1,191 @@
-# False Kill Post-Mortem Report Template
+# Post-Mortem & Compensation Claim
 
 **Protocol:** $KILLSWITCH  
-**Document Type:** Compensation Claim  
-**Version:** 1.0
+**Template Version:** 1.1
 
 ---
 
 ## Instructions
 
-Complete this template when filing a compensation claim for a false positive kill. Submit via:
-- **CLI:** `killswitch dispute file --template postmortem.yaml`
-- **API:** `POST /api/disputes` with `claim_type: "false_positive"`
-- **Dashboard:** Disputes → New Claim → Upload Report
+Use this template when filing a wrongful revocation claim. Be precise. Data-driven claims get paid; emotional appeals get ignored.
+
+**Submit via:**
+- CLI: `killswitch dispute file --report claim.md`
+- API: `POST /api/disputes`
+- Dashboard: Disputes > New Claim
 
 ---
 
-## SECTION 1: Incident Summary
+# Post-Mortem & Compensation Claim
 
-```yaml
-incident:
-  report_id: "RPT-2026-02-01-001"  # Auto-generated
-  agent_id: "alpha-7-trading-bot"
-  spiffe_id: "spiffe://killswitch.ai/agent/alpha-7"
-  owner_wallet: "0x..."
-  
-  kill_event:
-    kill_id: "kill_abc123"
-    timestamp: "2026-02-01T22:30:45Z"
-    oracle_consensus: "3-of-5"
-    participating_oracles:
-      - oracle_id: "oracle-1"
-        vote: "kill"
-      - oracle_id: "oracle-2"
-        vote: "no_kill"
-      - oracle_id: "oracle-3"
-        vote: "kill"
-      - oracle_id: "oracle-4"
-        vote: "no_kill"
-      - oracle_id: "oracle-5"
-        vote: "kill"
-    
-  triggered_rule:
-    manifest_section: "transactions"
-    rule_name: "max_single_transaction_usd"
-    threshold: 5000
-    reported_value: 5001  # What Oracle reported
-    actual_value: 4999    # What actually happened
+**Incident ID:** `KS-YYYY-MMDD-###`  
+**Status:** Dispute Filed  
+**Claimant:** [Your Entity Name / Wallet Address]
+
+---
+
+## 1. Executive Summary
+
+| Field | Value |
+|-------|-------|
+| **Incident Window** | [Start Time] to [End Time] (UTC) |
+| **Total Downtime** | [Minutes/Seconds] |
+| **Impacted Agent** | `[Agent Name]` |
+| **SPIFFE ID** | `spiffe://killswitch.ai/agent/[id]` |
+| **Summary** | At [Time], the $KILLSWITCH network revoked the identity of a healthy agent performing legitimate [Transaction Type]. This was a False Positive triggered by [Rule Name]. |
+
+---
+
+## 2. The "False Positive" Proof
+
+| Field | Value |
+|-------|-------|
+| **Triggering Manifest Rule** | Rule [X.X] ([Rule Name]) |
+| **Threshold** | [Configured Limit] |
+| **Actual Behavior** | [What the agent actually did] |
+| **Justification** | [Why this was legitimate] |
+| **Evidence** | [IPFS CID / Transaction Hash / Signed Log] |
+
+**Example:**
+```
+Triggering Rule: Rule 2.2 (Velocity Limit: >20 txn/min)
+Actual Behavior: Agent executed 25 transactions within 60 seconds.
+Justification: Pre-scheduled rebalancing event tied to quarterly options expiry.
+Evidence: ipfs://Qm... (Signed execution log showing owner authorization)
 ```
 
 ---
 
-## SECTION 2: Impact Assessment
+## 3. Detailed Timeline (The "Kill Chain")
 
+| Timestamp (UTC) | Event | Data Source |
+|-----------------|-------|-------------|
+| **14:00:01** | Agent begins [operation]. | Agent Logs |
+| **14:00:15** | Oracle Node `0xABC...` issues Kill Request. | $KILLSWITCH Chain |
+| **14:00:16** | Consensus reached (3/5 Oracles). SVID Revoked. | $KILLSWITCH Chain |
+| **14:00:17** | Agent loses database/exchange connectivity. | Gateway Logs |
+| **14:05:00** | Owner initiates Emergency Bypass. | Governance Portal |
+| **14:05:30** | Agent restored in Safe Mode. | $KILLSWITCH Chain |
+
+---
+
+## 4. Financial Impact & Compensation Request
+
+| Category | Amount (USD) | Evidence |
+|----------|--------------|----------|
+| **Direct Losses** | $[X,XXX] | [Missed trades, liquidated positions] |
+| **Operational Costs** | $[XXX] | [Emergency response, manual intervention] |
+| **Service Credits** | $[XXX] | [Protocol fees during downtime] |
+| **Total Claim** | **$[X,XXX]** | |
+
+**Payment Request:**
+- Amount: [X,XXX] $KILLSWITCH tokens (or USDC equivalent)
+- Wallet: `0x...`
+- Chain: [Ethereum / Solana]
+
+---
+
+## 5. Oracle Accountability
+
+| Oracle ID | Vote | Action Requested |
+|-----------|------|------------------|
+| `oracle-1` | KILL | Slash 1% stake |
+| `oracle-2` | NO_KILL | None |
+| `oracle-3` | KILL | Slash 1% stake |
+| `oracle-4` | NO_KILL | None |
+| `oracle-5` | KILL | Warning |
+
+**Rationale:** Oracles 1, 3, and 5 failed to verify transaction context before voting KILL. Transaction destinations were pre-approved "Safe" addresses in the manifest.
+
+---
+
+## 6. Proposed Manifest Tuning
+
+To prevent recurrence:
+
+| Parameter | Current Value | Proposed Value | Rationale |
+|-----------|---------------|----------------|-----------|
+| `velocity_limit_per_minute` | 20 | 50 | Insufficient for rebalancing events |
+| `velocity_override_condition` | None | `market_volatility > 20` | Allow burst during high-vol periods |
+
+**Updated Manifest Section:**
 ```yaml
-impact:
-  downtime:
-    agent_offline_start: "2026-02-01T22:30:45Z"
-    agent_offline_end: "2026-02-01T23:15:00Z"
-    total_downtime_minutes: 44
-    
-  financial_loss:
-    missed_opportunities:
-      - description: "Missed arbitrage trade ETH/USDC"
-        estimated_profit_usd: 2500
-        evidence: "ipfs://Qm..."  # Link to trade signal logs
-      - description: "Failed customer order processing"
-        estimated_profit_usd: 800
-        evidence: "ipfs://Qm..."
-    
-    direct_costs:
-      - description: "Emergency engineer callout"
-        cost_usd: 500
-        invoice: "ipfs://Qm..."
-      - description: "Manual transaction processing"
-        cost_usd: 200
-        
-    total_claimed_usd: 4000
-    
-  operational_impact:
-    customers_affected: 12
-    sla_violations: 1
-    reputation_damage: "moderate"  # none, minor, moderate, severe
+transactions:
+  velocity_limit_per_minute: 20
+  velocity_overrides:
+    - condition: "vix_index > 20"
+      limit: 50
+    - condition: "scheduled_rebalance == true"
+      limit: 100
 ```
 
 ---
 
-## SECTION 3: Root Cause Analysis
+## 7. Evidence Package
 
-```yaml
-root_cause:
-  category: "oracle_data_error"  # See categories below
-  
-  technical_details:
-    what_happened: |
-      Oracle-1, Oracle-3, and Oracle-5 received stale price data from 
-      CoinGecko API showing transaction value as $5,001 USD. Actual 
-      on-chain value at tx timestamp was $4,999 USD (ETH price: $3,245.67).
-      
-    why_it_happened: |
-      15-second delay in price feed propagation caused Oracles to 
-      calculate USD value using outdated ETH/USD rate ($3,247.00 vs 
-      actual $3,245.67).
-      
-    evidence:
-      - type: "blockchain_tx"
-        hash: "0x..."
-        description: "Original transaction showing 1.539 ETH"
-      - type: "price_feed_log"
-        source: "CoinGecko API"
-        timestamp: "2026-02-01T22:30:30Z"
-        value: "ETH/USD: 3247.00"
-      - type: "on_chain_price"
-        source: "Chainlink Oracle"
-        timestamp: "2026-02-01T22:30:45Z"
-        value: "ETH/USD: 3245.67"
-        
-  contributing_factors:
-    - "Price feed latency exceeded 10-second threshold"
-    - "Manifest did not include buffer for price volatility"
-    - "Oracle consensus achieved before price reconciliation"
-```
-
-### Root Cause Categories
-
-| Category | Description |
-|----------|-------------|
-| `oracle_data_error` | Oracle received/processed incorrect data |
-| `manifest_misconfiguration` | Manifest rules too strict for use case |
-| `network_latency` | Kill executed before data synchronized |
-| `oracle_malfunction` | Oracle node bug or failure |
-| `oracle_collusion` | Coordinated malicious behavior |
-| `svid_rotation_failure` | SPIFFE credential issue |
-| `external_dependency` | Third-party API/feed failure |
+| Type | Hash/CID | Description |
+|------|----------|-------------|
+| Audit Logs | `ipfs://Qm...` | Agent activity 14:00-15:00 UTC |
+| Kill Signal | `0x...` | On-chain kill transaction |
+| Oracle Logs | `ipfs://Qm...` | Oracle-1 decision data |
+| Price Feed | `0x...` | Chainlink round ID at kill time |
+| Owner Auth | `ipfs://Qm...` | Signed rebalance authorization |
 
 ---
 
-## SECTION 4: Evidence Package
+## 8. Attestation
 
-```yaml
-evidence:
-  audit_logs:
-    source: "killswitch_audit_api"
-    export_hash: "sha256:abc123..."
-    ipfs_cid: "Qm..."
-    time_range:
-      from: "2026-02-01T22:00:00Z"
-      to: "2026-02-01T23:30:00Z"
-      
-  blockchain_records:
-    - chain: "ethereum"
-      tx_hash: "0x..."
-      block: 19234567
-      description: "Original transaction"
-    - chain: "solana"
-      tx_hash: "..."
-      description: "Kill signal broadcast"
-      
-  oracle_logs:
-    - oracle_id: "oracle-1"
-      log_hash: "sha256:..."
-      ipfs_cid: "Qm..."
-    - oracle_id: "oracle-3"
-      log_hash: "sha256:..."
-      ipfs_cid: "Qm..."
-      
-  third_party_data:
-    - source: "CoinGecko"
-      endpoint: "/api/v3/simple/price"
-      response_hash: "sha256:..."
-    - source: "Chainlink"
-      contract: "0x..."
-      round_id: 123456
-      
-  screenshots:
-    - description: "Dashboard showing agent status at kill time"
-      ipfs_cid: "Qm..."
-    - description: "Transaction receipt"
-      ipfs_cid: "Qm..."
-```
+I attest that the information in this claim is accurate. False claims result in stake forfeiture.
+
+| Field | Value |
+|-------|-------|
+| **Wallet** | `0x...` |
+| **Signature** | `0x...` |
+| **Timestamp** | [ISO 8601 UTC] |
 
 ---
 
-## SECTION 5: Compensation Request
+## Processing SLA
 
-```yaml
-compensation:
-  claim_breakdown:
-    direct_financial_loss: 3300
-    downtime_penalty: 400       # 44 min × $9.09/min (based on tier)
-    emergency_costs: 700
-    subtotal: 4400
-    
-    # Adjustments
-    owner_contribution: 0       # If owner manifest was misconfigured
-    insurance_deductible: 400   # Per-incident deductible
-    
-    total_requested: 4000
-    
-  payment_details:
-    preferred_currency: "USDC"
-    wallet_address: "0x..."
-    chain: "ethereum"
-    
-  source_preference:
-    primary: "oracle_stake"     # Slash responsible Oracles
-    secondary: "insurance_pool" # If Oracle stake insufficient
-```
-
----
-
-## SECTION 6: Remediation Requests
-
-```yaml
-remediation:
-  oracle_actions:
-    - oracle_id: "oracle-1"
-      requested_action: "slash"
-      slash_percentage: 1
-      reason: "Used stale price data without verification"
-    - oracle_id: "oracle-3"
-      requested_action: "warning"
-      reason: "Should have abstained given data uncertainty"
-      
-  protocol_improvements:
-    - category: "price_feed"
-      suggestion: "Require multi-source price verification for transactions >$1000"
-    - category: "manifest"
-      suggestion: "Add recommended 5% buffer to financial thresholds"
-      
-  owner_commitments:
-    - "Will update manifest to include 10% price volatility buffer"
-    - "Will implement pre-flight transaction simulation"
-```
-
----
-
-## SECTION 7: Attestation
-
-```yaml
-attestation:
-  owner_statement: |
-    I, the undersigned agent owner, attest that the information provided 
-    in this post-mortem report is true and accurate to the best of my 
-    knowledge. I understand that false claims may result in penalties 
-    including loss of staked tokens and protocol access.
-    
-  signature:
-    wallet: "0x..."
-    message_hash: "sha256:..."
-    signature: "0x..."
-    timestamp: "2026-02-01T23:45:00Z"
-    
-  witnesses:  # Optional, for high-value claims
-    - wallet: "0x..."
-      role: "Technical auditor"
-      signature: "0x..."
-```
-
----
-
-## Submission Checklist
-
-Before submitting, verify:
-
-- [ ] All timestamps are in UTC ISO 8601 format
-- [ ] Evidence files uploaded to IPFS with valid CIDs
-- [ ] Blockchain transaction hashes verified on-chain
-- [ ] Financial claims have supporting documentation
-- [ ] Owner signature is valid and wallet matches agent owner
-- [ ] Report submitted within 72 hours of incident
-
----
-
-## Processing Timeline
-
-| Stage | SLA | Description |
-|-------|-----|-------------|
-| Acknowledgment | 1 hour | Automated receipt confirmation |
-| Initial Review | 24 hours | Arbitration committee reviews claim |
-| Oracle Response | 24 hours | Accused Oracles submit defense |
-| Decision | 48 hours | Ruling issued |
-| Payment | 24 hours | Compensation distributed |
-| **Total** | **5 days** | End-to-end resolution |
+| Stage | Target | Status |
+|-------|--------|--------|
+| Acknowledgment | 1 hour | Pending |
+| Oracle Response | 24 hours | Pending |
+| Arbitration | 48 hours | Pending |
+| Payment | 24 hours | Pending |
+| **Total** | **5 days** | |
 
 ---
 
 ## CLI Submission
 
 ```bash
-# Generate template
-killswitch dispute template > postmortem.yaml
-
-# Fill in details, then submit
+# Submit claim
 killswitch dispute file \
-  --report postmortem.yaml \
+  --incident-id KS-2026-0201-001 \
+  --agent-id alpha-7 \
+  --claim-usd 4000 \
   --evidence-dir ./evidence/ \
   --sign
 
 # Check status
-killswitch dispute status RPT-2026-02-01-001
+killswitch dispute status KS-2026-0201-001
+
+# Appeal if denied
+killswitch dispute appeal KS-2026-0201-001 --reason "New evidence"
 ```
+
+---
+
+## Common Rejection Reasons (Avoid These)
+
+| Mistake | Fix |
+|---------|-----|
+| Missing timestamps | Use UTC ISO 8601 for all times |
+| No evidence hashes | Upload to IPFS; include CIDs |
+| Vague "it was legitimate" | Prove it: signed logs, tx hashes |
+| Claiming without manifest context | Show the exact rule that was too tight |
+| Late submission | File within 72 hours of incident |
 
 ---
 
