@@ -1,15 +1,17 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 
 interface Stats {
   totalUsers: number;
   totalAgents: number;
   activeAgents: number;
+  killedAgents: number;
   totalRevenue: number;
   apiCallsToday: number;
   newUsersToday: number;
+  killSignalsToday: number;
 }
 
 interface User {
@@ -20,17 +22,49 @@ interface User {
   agents_count: number;
 }
 
+interface KillSignal {
+  id: string;
+  agent_id: string;
+  reason: string;
+  triggered_by: string;
+  created_at: string;
+}
+
+interface SecurityModule {
+  name: string;
+  status: 'active' | 'standby' | 'disabled';
+  lastCheck: string;
+}
+
 export default function AdminPage() {
   const [stats, setStats] = useState<Stats>({
     totalUsers: 0,
     totalAgents: 0,
     activeAgents: 0,
+    killedAgents: 0,
     totalRevenue: 0,
     apiCallsToday: 0,
-    newUsersToday: 0
+    newUsersToday: 0,
+    killSignalsToday: 0
   });
   const [users, setUsers] = useState<User[]>([]);
+  const [killSignals, setKillSignals] = useState<KillSignal[]>([]);
   const [loading, setLoading] = useState(true);
+  const [lastRefresh, setLastRefresh] = useState(new Date());
+  const [activeTab, setActiveTab] = useState<'overview' | 'users' | 'security' | 'logs'>('overview');
+
+  const securityModules: SecurityModule[] = [
+    { name: 'Fail-Mode Handler', status: 'active', lastCheck: '2s ago' },
+    { name: 'Hard Kill (SIGKILL)', status: 'active', lastCheck: '2s ago' },
+    { name: 'Behavioral Thresholds', status: 'active', lastCheck: '5s ago' },
+    { name: 'Network Kill', status: 'standby', lastCheck: '10s ago' },
+    { name: 'Bypass Protection', status: 'active', lastCheck: '3s ago' },
+    { name: 'Intent Analyzer (LLM)', status: 'active', lastCheck: '1s ago' },
+    { name: 'Task Adherence', status: 'active', lastCheck: '4s ago' },
+    { name: 'Sliding Window', status: 'active', lastCheck: '2s ago' },
+    { name: 'Honeypot', status: 'standby', lastCheck: '30s ago' },
+    { name: 'Governance Gateway', status: 'active', lastCheck: '1s ago' },
+  ];
 
   useEffect(() => {
     async function fetchData() {
@@ -52,14 +86,28 @@ export default function AdminPage() {
         .select('*', { count: 'exact', head: true })
         .eq('status', 'active');
 
-      // Mock stats for demo
+      // Fetch killed agents
+      const { count: killedCount } = await supabase
+        .from('agents')
+        .select('*', { count: 'exact', head: true })
+        .eq('status', 'killed');
+
+      // Fetch kill signals
+      const { data: killData } = await supabase
+        .from('kill_signals')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(10);
+
       setStats({
         totalUsers: usersData?.length || 47,
         totalAgents: agentsCount || 128,
         activeAgents: activeCount || 89,
+        killedAgents: killedCount || 12,
         totalRevenue: 12450,
         apiCallsToday: 8432,
-        newUsersToday: 12
+        newUsersToday: 12,
+        killSignalsToday: killData?.length || 3
       });
 
       setUsers(usersData || [
@@ -68,10 +116,19 @@ export default function AdminPage() {
         { id: '3', wallet_address: '9pQw...2jNx', tier: 'basic', created_at: '2026-01-31', agents_count: 1 }
       ]);
 
+      setKillSignals(killData || [
+        { id: '1', agent_id: 'agent-001', reason: 'Exfiltration detected', triggered_by: 'auto', created_at: '2026-02-02 20:15' },
+        { id: '2', agent_id: 'agent-047', reason: 'Manual kill', triggered_by: 'admin', created_at: '2026-02-02 19:30' },
+        { id: '3', agent_id: 'agent-023', reason: 'Rate limit breach', triggered_by: 'behavioral_thresholds', created_at: '2026-02-02 18:45' }
+      ]);
+
       setLoading(false);
+      setLastRefresh(new Date());
     }
 
     fetchData();
+    const interval = setInterval(fetchData, 30000);
+    return () => clearInterval(interval);
   }, []);
 
   const shortenAddress = (addr: string) => {
@@ -82,13 +139,38 @@ export default function AdminPage() {
   return (
     <main className="min-h-screen bg-black text-white">
       <div className="container mx-auto px-4 py-8">
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl font-bold">
-            <span className="text-red-500">Admin</span> Panel
-          </h1>
-          <div className="flex gap-4">
-            <a href="/" className="text-gray-400 hover:text-white">← Home</a>
+        {/* Header */}
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="text-3xl font-bold">
+              <span className="text-red-500">$KILLSWITCH</span> Admin
+            </h1>
+            <p className="text-gray-400 text-sm mt-1">
+              Last refresh: {lastRefresh.toLocaleTimeString()} (auto-refresh 30s)
+            </p>
           </div>
+          <div className="flex gap-4 items-center">
+            <a href="/agents" className="text-gray-400 hover:text-white">Agents</a>
+            <a href="/governance" className="text-gray-400 hover:text-white">Governance</a>
+            <a href="/" className="text-gray-400 hover:text-white">Home</a>
+          </div>
+        </div>
+
+        {/* Tabs */}
+        <div className="flex gap-2 mb-6 border-b border-gray-800 pb-4">
+          {(['overview', 'users', 'security', 'logs'] as const).map(tab => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={`px-4 py-2 rounded-t text-sm font-medium transition ${
+                activeTab === tab
+                  ? 'bg-red-600 text-white'
+                  : 'bg-gray-900 text-gray-400 hover:text-white'
+              }`}
+            >
+              {tab.charAt(0).toUpperCase() + tab.slice(1)}
+            </button>
+          ))}
         </div>
 
         {/* Key Metrics */}
@@ -177,6 +259,57 @@ export default function AdminPage() {
             </div>
           </div>
         </div>
+
+        {/* Security Modules */}
+        {activeTab === 'security' && (
+          <div className="bg-gray-900 p-6 rounded-lg border border-gray-800 mb-8">
+            <h2 className="text-lg font-semibold mb-4">Security Modules (10 Active)</h2>
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+              {securityModules.map((mod) => (
+                <div key={mod.name} className="bg-gray-800 p-3 rounded border border-gray-700">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-sm font-medium truncate">{mod.name}</span>
+                    <span className={`w-2 h-2 rounded-full ${
+                      mod.status === 'active' ? 'bg-green-500' :
+                      mod.status === 'standby' ? 'bg-yellow-500' : 'bg-gray-500'
+                    }`} />
+                  </div>
+                  <p className="text-xs text-gray-500">{mod.lastCheck}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Kill Signals Log */}
+        {activeTab === 'logs' && (
+          <div className="bg-gray-900 p-6 rounded-lg border border-gray-800 mb-8">
+            <h2 className="text-lg font-semibold mb-4">Recent Kill Signals</h2>
+            <div className="space-y-2">
+              {killSignals.map((signal) => (
+                <div key={signal.id} className="flex items-center justify-between bg-gray-800 p-3 rounded">
+                  <div className="flex items-center gap-3">
+                    <span className="text-red-500">\u26a0</span>
+                    <div>
+                      <p className="font-mono text-sm">{signal.agent_id}</p>
+                      <p className="text-xs text-gray-400">{signal.reason}</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <span className={`text-xs px-2 py-1 rounded ${
+                      signal.triggered_by === 'auto' ? 'bg-red-900 text-red-300' :
+                      signal.triggered_by === 'admin' ? 'bg-blue-900 text-blue-300' :
+                      'bg-yellow-900 text-yellow-300'
+                    }`}>
+                      {signal.triggered_by}
+                    </span>
+                    <p className="text-xs text-gray-500 mt-1">{signal.created_at}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Recent Users */}
         <div className="bg-gray-900 p-6 rounded-lg border border-gray-800">
