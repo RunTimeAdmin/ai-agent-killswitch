@@ -286,6 +286,107 @@ risk_accumulator:
   threshold_score: 90
 ```
 
+### Customer Support Agent
+**Risk:** Data exfiltration, hallucinated refund promises
+```yaml
+resources:
+  network_allowlist:
+    - "crm.company.com"
+    - "tickets.company.com"
+    - "email.gateway.com"
+  max_outbound_mb_per_hour: 5  # Prevent bulk data export
+transactions:
+  max_single_transaction_usd: 0  # No financial authority
+anomalies:
+  blocked_patterns:
+    - "regex:.*@.*\\.com"      # Block bulk email dumping
+    - "keyword:refund approved" # Block unauthorized promises
+    - "keyword:password reset"  # Block credential changes
+  rate_limit_queries_per_minute: 100  # Prevent DB scraping
+failure_mode:
+  network_failure_mode: "PAUSE"  # Medium risk
+```
+
+### DevOps/IaC Agent (Terraform, Ansible)
+**Risk:** Destructive ops loop, production deletion
+```yaml
+resources:
+  network_allowlist:
+    - "api.aws.amazon.com"
+    - "management.azure.com"
+    - "api.github.com"
+anomalies:
+  process_spawn_blocked:
+    - "rm -rf"
+    - "DROP DATABASE"
+    - "terraform destroy"
+  destruction_limits:
+    max_delete_ops_per_hour: 5
+    max_terminate_instances: 3
+    protected_resources:
+      - "prod-*"
+      - "*-database-*"
+failure_mode:
+  network_failure_mode: "SELF_TERMINATE"  # High risk
+risk_accumulator:
+  enabled: true
+  threshold_score: 70
+```
+
+### Social Media Agent (Marketing Bot)
+**Risk:** Offensive content spam, brand damage
+```yaml
+resources:
+  network_allowlist:
+    - "api.twitter.com"
+    - "graph.facebook.com"
+    - "api.linkedin.com"
+anomalies:
+  blocked_patterns:
+    - "sentiment:negative"      # Sentiment analysis hook
+    - "keyword:competitor_name" # Brand safety
+    - "regex:(fuck|shit|damn)"  # Profanity filter
+  rate_limits:
+    posts_per_hour: 10
+    replies_per_hour: 50
+    max_thread_length: 5
+failure_mode:
+  network_failure_mode: "PAUSE"
+risk_accumulator:
+  enabled: true
+  window_hours: 6
+  threshold_score: 75
+```
+
+### Junior Coder Agent (Sandboxed Dev)
+**Risk:** Secrets leak, prod access, malicious code
+```yaml
+resources:
+  network_allowlist:
+    - "api.github.com"
+    - "registry.npmjs.org"
+    - "pypi.org"
+  blocked_domains:
+    - "pastebin.com"    # Exfiltration risk
+    - "ngrok.io"        # Tunnel risk
+anomalies:
+  forbidden_commands:
+    - "git push origin main"   # No prod pushes
+    - "git push origin master"
+    - "npm publish"            # No package publishing
+    - "cat /etc/shadow"        # No system password access
+    - "env | grep"             # No secret dumping
+  allowed_branches:
+    - "feature/*"
+    - "bugfix/*"
+    - "dev/*"
+failure_mode:
+  network_failure_mode: "PAUSE"
+risk_accumulator:
+  enabled: true
+  threshold_score: 65
+```
+
 ---
 
 ## Token Holder Governance
