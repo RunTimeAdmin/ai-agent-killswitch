@@ -1,25 +1,45 @@
 export default function Home() {
   return (
     <main className="min-h-screen bg-black text-white">
+      {/* Navigation */}
+      <nav className="border-b border-gray-800 py-4">
+        <div className="container mx-auto px-4 flex justify-between items-center">
+          <span className="text-xl font-bold text-red-500">$KILLSWITCH</span>
+          <div className="flex gap-6">
+            <a href="/agents" className="text-gray-400 hover:text-white">Dashboard</a>
+            <a href="/subscription" className="text-gray-400 hover:text-white">Pricing</a>
+            <a href="/governance" className="text-gray-400 hover:text-white">Governance</a>
+            <a href="/admin" className="text-gray-400 hover:text-white">Admin</a>
+            <a href="https://github.com/RunTimeAdmin/ai-agent-killswitch" target="_blank" className="text-gray-400 hover:text-white">GitHub</a>
+          </div>
+        </div>
+      </nav>
+
       {/* Hero Section */}
       <div className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-red-900/20 to-transparent" />
         <div className="container mx-auto px-4 py-20 relative">
           <div className="text-center max-w-4xl mx-auto">
-            <div className="mb-6">
+            <div className="mb-6 flex gap-3 justify-center flex-wrap">
               <span className="bg-red-600/20 text-red-400 px-4 py-2 rounded-full text-sm font-semibold">
-                82/82 Tests Passing • Production Ready
+                10 Security Modules
+              </span>
+              <span className="bg-green-600/20 text-green-400 px-4 py-2 rounded-full text-sm font-semibold">
+                6,149 Lines of Protection
+              </span>
+              <span className="bg-blue-600/20 text-blue-400 px-4 py-2 rounded-full text-sm font-semibold">
+                SPIFFE/SPIRE Ready
               </span>
             </div>
             <h1 className="text-5xl md:text-7xl font-bold mb-6">
               <span className="text-red-500">$KILLSWITCH</span>
             </h1>
-            <p className="text-xl md:text-2xl text-gray-300 mb-8">
+            <p className="text-xl md:text-2xl text-gray-300 mb-4">
               Because every AI needs an off switch.
             </p>
             <p className="text-lg text-gray-400 mb-12 max-w-2xl mx-auto">
-              Real-time monitoring and instant termination for AI agents. 
-              Protect your systems with enterprise-grade safety controls.
+              Enterprise-grade AI agent safety. Real-time monitoring, behavioral analysis,
+              and instant termination in under 100ms.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -39,6 +59,29 @@ export default function Home() {
               </a>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Code Example */}
+      <div className="container mx-auto px-4 py-12">
+        <div className="bg-gray-900 rounded-xl border border-gray-800 overflow-hidden max-w-3xl mx-auto">
+          <div className="bg-gray-800 px-4 py-2 flex gap-2">
+            <span className="w-3 h-3 rounded-full bg-red-500"></span>
+            <span className="w-3 h-3 rounded-full bg-yellow-500"></span>
+            <span className="w-3 h-3 rounded-full bg-green-500"></span>
+            <span className="text-gray-400 text-sm ml-2">pip install killswitch-fence</span>
+          </div>
+          <pre className="p-6 text-sm overflow-x-auto">
+            <code className="text-green-400">
+{`from killswitch import fence
+
+@fence.protect(agent_id="my-agent")
+def my_ai_agent(task):
+    # Your agent code here
+    result = llm.complete(task)
+    return result  # Monitored & protected`}
+            </code>
+          </pre>
         </div>
       </div>
 
@@ -110,22 +153,51 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             <div>
-              <p className="text-4xl font-bold text-red-500">82</p>
-              <p className="text-gray-400">Tests Passing</p>
+              <p className="text-4xl font-bold text-red-500">10</p>
+              <p className="text-gray-400">Security Modules</p>
             </div>
             <div>
               <p className="text-4xl font-bold text-red-500">&lt;100ms</p>
               <p className="text-gray-400">Kill Latency</p>
             </div>
             <div>
-              <p className="text-4xl font-bold text-red-500">24/7</p>
-              <p className="text-gray-400">Monitoring</p>
+              <p className="text-4xl font-bold text-red-500">6K+</p>
+              <p className="text-gray-400">Lines of Code</p>
             </div>
             <div>
-              <p className="text-4xl font-bold text-red-500">100%</p>
-              <p className="text-gray-400">Open Source</p>
+              <p className="text-4xl font-bold text-red-500">30s</p>
+              <p className="text-gray-400">SPIFFE Revocation</p>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Security Modules */}
+      <div className="container mx-auto px-4 py-20">
+        <h2 className="text-3xl font-bold text-center mb-4">
+          10 <span className="text-red-500">Security Modules</span>
+        </h2>
+        <p className="text-gray-400 text-center mb-12 max-w-2xl mx-auto">
+          Defense in depth with multiple layers of protection against rogue AI agents
+        </p>
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+          {[
+            { name: 'Fail-Mode Handler', desc: 'CLOSED/CACHED/OPEN' },
+            { name: 'Hard Kill', desc: 'SIGTERM → SIGKILL' },
+            { name: 'Behavioral Thresholds', desc: 'Rate limiting' },
+            { name: 'Network Kill', desc: 'Firewall rules' },
+            { name: 'Bypass Protection', desc: 'Hash verification' },
+            { name: 'Intent Analyzer', desc: 'Shadow LLM' },
+            { name: 'Task Adherence', desc: 'Drift detection' },
+            { name: 'Governance Gate', desc: 'Vote vs instant' },
+            { name: 'Sliding Window', desc: '24h cumulative' },
+            { name: 'Honeypot', desc: 'Forensic sandbox' },
+          ].map((mod) => (
+            <div key={mod.name} className="bg-gray-900 p-4 rounded-lg border border-gray-800 hover:border-red-500/50 transition">
+              <p className="font-semibold text-sm">{mod.name}</p>
+              <p className="text-xs text-gray-500">{mod.desc}</p>
+            </div>
+          ))}
         </div>
       </div>
 
