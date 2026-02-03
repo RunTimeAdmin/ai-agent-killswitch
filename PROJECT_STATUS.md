@@ -56,14 +56,39 @@
 | 100,000+ | 20% off | Vote on proposals |
 | 1,000,000+ | 40% off | 2x voting power |
 
-### Subscription Tiers
+### Standard Subscription Tiers
 | Tier | USD Price | With 40% Discount |
 |------|-----------|-------------------|
-| Basic | $5/mo | $3/mo |
-| Pro | $50/mo | $30/mo |
-| Team | $250/mo | $150/mo |
-| Enterprise | $1,000/mo | $600/mo |
-| VIP | $5,000/mo | $3,000/mo |
+| Basic | $49/mo | $29/mo |
+| Pro | $149/mo | $89/mo |
+| Team | $349/mo | $209/mo |
+
+---
+
+## 🏢 ENTERPRISE EDITION
+
+**Target:** 100+ agents, regulated industries, Fortune 500
+
+| Tier | Annual License | Agents | Clusters | Support |
+|------|----------------|--------|----------|--------|
+| Silver | $100,000 | 100 | 2 | 8x5 |
+| Gold | $300,000 | 500 | 5 | 24/7, 1hr |
+| Platinum | $750,000 | Unlimited | Unlimited | 24/7, 15min |
+
+**Enterprise Features:**
+- ✅ Full SPIFFE/SPIRE integration
+- ✅ mTLS authentication
+- ✅ <30 second kill switch
+- ✅ SOC2/ISO 27001/PCI-DSS/HIPAA compliance
+- ✅ Dedicated account manager
+- ✅ On-site deployment assistance
+
+**Token Holder Enterprise Benefits:**
+- 2x governance voting power
+- Priority feature access
+- Revenue share via staking (12-20% APY)
+
+**Full details:** [ENTERPRISE_PRICING.md](./ENTERPRISE_PRICING.md)
 
 ---
 
@@ -267,6 +292,24 @@
 | Governance | Token voting | None | None | None |
 | Auto-Kill | Circuit breaker | None | None | None |
 | Author Expertise | SPIFFE book author | N/A | N/A | N/A |
+
+---
+
+## ⚠️ RISK ASSESSMENT (Devil's Advocate)
+
+**Key Insight:** Using SPIFFE **patterns**, not SPIRE **infrastructure**.
+
+| Risk | Severity | Status |
+|------|----------|--------|
+| Double Kill (API + SPIFFE) | HIGH | ✅ Mitigated - No fallback mode |
+| SPIRE SPOF | HIGH | ✅ N/A - Using Supabase |
+| CA Compromise | CRITICAL | ✅ N/A - Not using PKI yet |
+| mTLS Performance | MEDIUM | ✅ N/A - REST API only |
+| Complexity | MEDIUM | ✅ Simple DB-backed design |
+| Kill Verification Gaps | HIGH | ✅ No caching + real-time |
+| Over-Engineering | MEDIUM | ✅ 5 hours total investment |
+
+**Full analysis:** [SPIFFE_RISK_ASSESSMENT.md](./SPIFFE_RISK_ASSESSMENT.md)
 
 ---
 
