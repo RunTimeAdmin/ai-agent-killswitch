@@ -303,12 +303,12 @@
 
 | Priority | Issue | Effort | Status |
 |----------|-------|--------|--------|
-| P1 | Fail-Mode Strategy | 2 hours | ⬜ Pending |
-| P1 | Hard Kill (SIGKILL) | 1 hour | ⬜ Pending |
-| P2 | Behavioral Thresholds | 4 hours | ⬜ Pending |
-| P2 | Network-Level Kill | 4 hours | ⬜ Pending |
-| P2 | Bypass Protection | 8 hours | ⬜ Pending |
-| P3 | Intent Analysis (LLM) | 8 hours | ⬜ Pending |
+| P1 | Fail-Mode Strategy | 2 hours | ✅ Complete |
+| P1 | Hard Kill (SIGKILL) | 1 hour | ✅ Complete |
+| P2 | Behavioral Thresholds | 4 hours | ✅ Complete |
+| P2 | Network-Level Kill | 4 hours | ✅ Complete |
+| P2 | Bypass Protection | 8 hours | ✅ Complete |
+| P3 | Intent Analysis (LLM) | 8 hours | ✅ Complete |
 
 **Full details:** [SECURITY_HARDENING_ROADMAP.md](./SECURITY_HARDENING_ROADMAP.md)
 
