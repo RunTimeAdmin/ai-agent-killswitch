@@ -4,7 +4,7 @@
 
 $KILLSWITCH is a comprehensive safety ecosystem for AI agents, powered by Runtime Fence technology. Think of it as a kill switch for your AI - instantly stop any agent, block dangerous actions, and monitor everything in real-time.
 
-[![Tests](https://img.shields.io/badge/tests-17%2F17%20passing-brightgreen)](https://github.com/RunTimeAdmin/ai-agent-killswitch/actions) [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE) [![Python](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/) [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)](https://www.typescriptlang.org/)
+[![Tests](https://img.shields.io/badge/tests-82%2F82%20passing-brightgreen)](https://github.com/RunTimeAdmin/ai-agent-killswitch/actions) [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE) [![Python](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/) [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)](https://www.typescriptlang.org/) [![Security](https://img.shields.io/badge/security-10%20modules-red)](docs/Security-Hardening.md)
 
 ---
 
@@ -20,6 +20,19 @@ $KILLSWITCH is a comprehensive safety ecosystem for AI agents, powered by Runtim
 - **📝 Audit Logging** - Complete trail of all agent activity
 - **📧 Email/SMS Alerts** - Get notified of suspicious behavior
 - **🖥️ Cross-Platform** - Windows, macOS, and Linux support
+
+### Security Hardening (10 Modules, 7,693 Lines)
+
+- **🔒 Fail-Mode Handler** - CLOSED/CACHED/OPEN fail strategies
+- **☠️ Hard Kill** - SIGTERM → SIGKILL escalation
+- **📊 Behavioral Thresholds** - Rate limiting & exfiltration detection
+- **🌐 Network Kill** - OS-level firewall containment
+- **🛡️ Bypass Protection** - Package integrity verification
+- **🧠 Intent Analyzer** - Shadow LLM for obfuscation detection
+- **🎯 Task Adherence** - Agentic drift detection
+- **🗳️ Governance Gate** - LOCAL (instant) vs GOVERNED (vote) separation
+- **📈 Sliding Window** - 1h/6h/24h cumulative thresholds
+- **🎭 Honeypot** - Forensic sandbox with response jitter
 
 ---
 
@@ -269,6 +282,18 @@ $KILLSWITCH provides the guardrails that prevent AI agents from causing catastro
 
 ---
 
+## 📚 Documentation
+
+| Document | Description |
+|----------|-------------|
+| [API Reference](docs/API-Reference.md) | Full REST API documentation with examples |
+| [Integration Guide](docs/Integration-Guide.md) | LangChain, AutoGPT, OpenAI, Anthropic integration |
+| [Troubleshooting & FAQ](docs/Troubleshooting-FAQ.md) | Common issues and solutions |
+| [Security Hardening](wiki/Security-Hardening.md) | 10 security modules documentation |
+| [GitHub Wiki](https://github.com/RunTimeAdmin/ai-agent-killswitch/wiki) | Full wiki documentation |
+
+---
+
 ## 📜 License
 
 MIT License - see [LICENSE](LICENSE) for details.
@@ -337,6 +362,8 @@ We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guid
 - [x] $KILLSWITCH token utility
 - [x] Token-weighted governance
 - [x] Usage tracking & limits
+- [x] SPIFFE/SPIRE identity integration
+- [x] Security hardening (10 modules)
 - [ ] Mobile app (coming soon)
 
 ---
