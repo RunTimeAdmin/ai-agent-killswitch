@@ -18,7 +18,7 @@ export class SubscriptionService {
 
   constructor() {
     this.stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
-      apiVersion: '2023-10-16',
+      apiVersion: '2025-01-27.acacia' as Stripe.LatestApiVersion,
     });
   }
 
@@ -46,7 +46,7 @@ export class SubscriptionService {
     });
 
     const invoice = subscription.latest_invoice as Stripe.Invoice;
-    const paymentIntent = invoice?.payment_intent as Stripe.PaymentIntent;
+    const paymentIntent = (invoice as any)?.payment_intent as Stripe.PaymentIntent;
 
     return {
       subscriptionId: subscription.id,

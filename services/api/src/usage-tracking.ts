@@ -88,13 +88,13 @@ export function trackUsage(metricType: string = 'api_calls') {
     if (!user) return next();
 
     const userId = user.id;
-    const tier = user.tier || 'basic';
+    const tier = (user.tier || 'basic') as TierName;
 
     // Check limits before processing
     if (!checkLimit(userId, tier)) {
       return res.status(429).json({
         error: 'Rate limit exceeded',
-        message: `You have exceeded your ${tier} tier limit of ${TIERS[tier].apiCalls} API calls per month`,
+        message: `You have exceeded your ${tier} tier limit of ${TIERS[tier as keyof typeof TIERS].apiCalls} API calls per month`,
         upgrade: 'Upgrade your plan at /settings/subscription',
       });
     }
@@ -103,7 +103,7 @@ export function trackUsage(metricType: string = 'api_calls') {
     const newCount = incrementUsage(userId);
 
     // Add usage headers
-    const limit = TIERS[tier].apiCalls;
+    const limit = TIERS[tier as keyof typeof TIERS].apiCalls;
     res.setHeader('X-Usage-Count', newCount.toString());
     res.setHeader('X-Usage-Limit', limit === -1 ? 'unlimited' : limit.toString());
     res.setHeader('X-Usage-Remaining', limit === -1 ? 'unlimited' : (limit - newCount).toString());
