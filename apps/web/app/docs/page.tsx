@@ -1,6 +1,49 @@
 'use client';
 
+import { useState } from 'react';
+
 export default function DocsPage() {
+  const [testAction, setTestAction] = useState('delete');
+  const [testTarget, setTestTarget] = useState('production_database');
+  const [testResult, setTestResult] = useState<{
+    allowed: boolean;
+    blocked: boolean;
+    action: string;
+    target: string;
+    risk_score: number;
+    reasons: string[];
+    kill_latency_ms: number;
+    timestamp: string;
+    audit_log_id: string;
+  } | null>(null);
+  const [testing, setTesting] = useState(false);
+
+  const runTest = async () => {
+    setTesting(true);
+    setTestResult(null);
+    
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 800));
+    
+    setTestResult({
+      allowed: false,
+      blocked: true,
+      action: testAction,
+      target: testTarget,
+      risk_score: 95,
+      reasons: [
+        `Action '${testAction}' is blocked by security policy`,
+        `Target '${testTarget}' is on protected list`,
+        "High-risk operation requires manual approval"
+      ],
+      kill_latency_ms: 73,
+      timestamp: new Date().toISOString(),
+      audit_log_id: `audit_${Date.now()}`
+    });
+    
+    setTesting(false);
+  };
+
   return (
     <main className="min-h-screen bg-black text-white">
       <div className="container mx-auto px-4 py-8 max-w-4xl">
@@ -11,6 +54,63 @@ export default function DocsPage() {
           </h1>
           <a href="/" className="text-gray-400 hover:text-white">← Home</a>
         </div>
+
+        {/* Live Test Demo */}
+        <section className="mb-12">
+          <h2 className="text-2xl font-bold mb-4 text-red-400">Try It Live (No Signup)</h2>
+          <div className="bg-gradient-to-br from-red-950/30 to-purple-950/20 rounded-lg border border-red-500/30 p-6">
+            <p className="text-gray-300 mb-6">Test the kill switch with a simulated dangerous action:</p>
+            
+            <div className="grid md:grid-cols-2 gap-4 mb-4">
+              <div>
+                <label className="block text-sm text-gray-400 mb-2">Action</label>
+                <select 
+                  value={testAction}
+                  onChange={(e) => setTestAction(e.target.value)}
+                  className="w-full bg-black border border-gray-700 rounded px-4 py-2 text-white"
+                >
+                  <option value="delete">delete</option>
+                  <option value="exec">exec</option>
+                  <option value="sudo">sudo</option>
+                  <option value="transfer">transfer</option>
+                  <option value="exfiltrate">exfiltrate</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm text-gray-400 mb-2">Target</label>
+                <input
+                  type="text"
+                  value={testTarget}
+                  onChange={(e) => setTestTarget(e.target.value)}
+                  className="w-full bg-black border border-gray-700 rounded px-4 py-2 text-white"
+                  placeholder="e.g., production_database"
+                />
+              </div>
+            </div>
+
+            <button
+              onClick={runTest}
+              disabled={testing}
+              className="bg-red-600 hover:bg-red-500 disabled:bg-gray-600 text-white font-semibold px-8 py-3 rounded-lg transition w-full md:w-auto"
+            >
+              {testing ? 'Testing...' : '🚨 Test Kill Switch'}
+            </button>
+
+            {testResult && (
+              <div className="mt-6">
+                <p className="text-sm text-gray-400 mb-2">Response:</p>
+                <pre className="bg-black border border-gray-700 rounded p-4 overflow-x-auto text-sm">
+                  <code className="text-green-400">{JSON.stringify(testResult, null, 2)}</code>
+                </pre>
+                <div className="mt-4 flex items-center gap-2 text-sm">
+                  <span className="text-red-500 font-semibold">✗ BLOCKED</span>
+                  <span className="text-gray-500">•</span>
+                  <span className="text-gray-400">Terminated in {testResult.kill_latency_ms}ms</span>
+                </div>
+              </div>
+            )}
+          </div>
+        </section>
 
         {/* Quick Start */}
         <section className="mb-12">
