@@ -10,7 +10,7 @@ interface PhantomWindow extends Window {
     isPhantom?: boolean;
     connect: () => Promise<{ publicKey: { toString: () => string } }>;
     disconnect: () => Promise<void>;
-    on: (event: string, callback: () => void) => void;
+    on: (event: string, callback: (args?: unknown) => void) => void;
     publicKey?: { toString: () => string };
   };
 }
