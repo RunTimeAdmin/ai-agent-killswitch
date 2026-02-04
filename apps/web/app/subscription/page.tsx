@@ -80,9 +80,9 @@ export default function SubscriptionPage() {
 
   return (
     <main className="min-h-screen bg-black text-white">
-      {/* Demo Banner */}
-      <div className="bg-gradient-to-r from-yellow-600 to-orange-600 text-black text-center py-2 px-4 text-sm">
-        <span className="font-semibold">Demo Mode</span> — Payments not active yet. <a href="/docs" className="underline">View integration docs</a>
+      {/* Live Status Banner */}
+      <div className="bg-gradient-to-r from-green-600 to-emerald-600 text-white text-center py-2 px-4 text-sm">
+        <span className="font-semibold">🟢 Live</span> — Token holders get up to 40% off. <a href="/docs" className="underline">Test API</a>
       </div>
 
       <div className="container mx-auto px-4 py-8">

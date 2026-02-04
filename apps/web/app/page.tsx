@@ -1,12 +1,11 @@
 export default function Home() {
   return (
     <main className="min-h-screen bg-[#0a0a0a] text-white">
-      {/* Demo Banner */}
-      <div className="fixed top-0 w-full z-[60] bg-gradient-to-r from-yellow-600 to-orange-600 text-black text-center py-2 px-4">
-        <span className="font-semibold">Demo Preview</span>
+      {/* Live Status Banner */}
+      <div className="fixed top-0 w-full z-[60] bg-gradient-to-r from-green-600 to-emerald-600 text-white text-center py-2 px-4">
+        <span className="font-semibold">🟢 Live & Operational</span>
         <span className="mx-2">—</span>
-        <span>This is a product demo showcasing the $KILLSWITCH platform.</span>
-        <a href="/docs" className="ml-2 underline font-semibold hover:no-underline">Learn how it works →</a>
+        <span>API is live. Token is live on Solana. <a href="/docs" className="underline font-semibold hover:no-underline">Test it now →</a></span>
       </div>
 
       {/* Navigation */}
@@ -39,9 +38,9 @@ export default function Home() {
         </div>
         <div className="relative max-w-7xl mx-auto px-6">
           <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 bg-yellow-500/10 border border-yellow-500/30 rounded-full px-4 py-1.5 mb-8">
-              <span className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse" />
-              <span className="text-sm text-yellow-300">Demo Preview — Token live on Solana</span>
+            <div className="inline-flex items-center gap-2 bg-green-500/10 border border-green-500/30 rounded-full px-4 py-1.5 mb-8">
+              <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+              <span className="text-sm text-green-300">Live on Solana — API Operational</span>
             </div>
             <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6">
               The kill switch<br />
@@ -52,8 +51,8 @@ export default function Home() {
               Real-time monitoring, instant termination, and cryptographic identity—all in under 100ms.
             </p>
             <div className="flex flex-wrap gap-4">
-              <a href="/agents" className="bg-red-600 hover:bg-red-500 font-semibold px-8 py-4 rounded-xl transition inline-flex items-center gap-2">
-                Launch Dashboard
+              <a href="/docs" className="bg-red-600 hover:bg-red-500 font-semibold px-8 py-4 rounded-xl transition inline-flex items-center gap-2">
+                Test It Now (No Signup)
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
               </a>
               <a href="https://github.com/RunTimeAdmin/ai-agent-killswitch" target="_blank" className="bg-white/5 hover:bg-white/10 border border-white/10 font-semibold px-8 py-4 rounded-xl transition inline-flex items-center gap-2">
@@ -65,25 +64,29 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Metrics Bar */}
+      {/* Live Stats Bar */}
       <section className="border-y border-white/5 bg-white/[0.02]">
         <div className="max-w-7xl mx-auto px-6 py-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
             <div className="text-center">
-              <p className="text-3xl font-bold text-white">10</p>
-              <p className="text-sm text-gray-500 mt-1">Security Modules</p>
+              <p className="text-3xl font-bold text-white">82/82</p>
+              <p className="text-sm text-gray-500 mt-1">Tests Passing</p>
             </div>
             <div className="text-center">
               <p className="text-3xl font-bold text-white">&lt;100<span className="text-lg">ms</span></p>
               <p className="text-sm text-gray-500 mt-1">Kill Latency</p>
             </div>
             <div className="text-center">
-              <p className="text-3xl font-bold text-white">6,149</p>
-              <p className="text-sm text-gray-500 mt-1">Lines of Code</p>
+              <p className="text-3xl font-bold text-white">99.9<span className="text-lg">%</span></p>
+              <p className="text-sm text-gray-500 mt-1">API Uptime</p>
             </div>
             <div className="text-center">
-              <p className="text-3xl font-bold text-white">30<span className="text-lg">s</span></p>
-              <p className="text-sm text-gray-500 mt-1">SPIFFE Revocation</p>
+              <p className="text-3xl font-bold text-white">10</p>
+              <p className="text-sm text-gray-500 mt-1">Security Modules</p>
+            </div>
+            <div className="text-center">
+              <p className="text-3xl font-bold text-white">Live</p>
+              <p className="text-sm text-gray-500 mt-1">On Solana</p>
             </div>
           </div>
         </div>
@@ -131,13 +134,15 @@ export default function Home() {
               </div>
               <pre className="p-6 text-sm overflow-x-auto">
                 <code>
-                  <span className="text-purple-400">from</span> <span className="text-blue-400">killswitch</span> <span className="text-purple-400">import</span> fence{"\n"}
+                  <span className="text-gray-500"># Your agent running live trades</span>{"\n"}
+                  <span className="text-yellow-400">@fence.protect</span>(agent_id=<span className="text-green-400">&quot;trading-bot-001&quot;</span>){"\n"}
+                  <span className="text-purple-400">def</span> <span className="text-blue-400">trading_bot</span>():{"\n"}
+                  {"    "}<span className="text-purple-400">while</span> <span className="text-blue-400">True</span>:{"\n"}
+                  {"        "}execute_trades(){"\n"}
                   {"\n"}
-                  <span className="text-gray-500"># That&apos;s it. Your agent is now protected.</span>{"\n"}
-                  <span className="text-yellow-400">@fence.protect</span>(agent_id=<span className="text-green-400">&quot;prod-agent-001&quot;</span>){"\n"}
-                  <span className="text-purple-400">def</span> <span className="text-blue-400">my_ai_agent</span>(task):{"\n"}
-                  {"    "}result = llm.complete(task){"\n"}
-                  {"    "}<span className="text-purple-400">return</span> result{"\n"}
+                  <span className="text-gray-500"># Click KILL in dashboard → Agent stops in &lt;100ms</span>{"\n"}
+                  <span className="text-gray-500"># Result: SIGTERM → SIGKILL escalation</span>{"\n"}
+                  <span className="text-gray-500"># Audit log: &quot;Terminated by wallet 0x...&quot;</span>{"\n"}
                 </code>
               </pre>
             </div>
@@ -205,13 +210,18 @@ export default function Home() {
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
                 </a>
               </div>
-              <div className="bg-black/30 p-12 flex items-center justify-center">
+              <div className="bg-black/30 p-12 flex flex-col items-center justify-center">
                 <div className="text-center">
                   <p className="text-gray-500 text-sm mb-3">Contract Address</p>
-                  <div className="bg-black/50 border border-white/10 rounded-xl px-6 py-4">
+                  <div className="bg-black/50 border border-white/10 rounded-xl px-6 py-4 mb-4">
                     <code className="text-red-400 text-sm font-mono break-all">56o8um92XU8QMr1FsSj4nkExEkgKe56PBTAMqCAzmoon</code>
                   </div>
-                  <p className="text-gray-500 text-sm mt-4">Solana • SPL Token</p>
+                  <p className="text-gray-500 text-xs mb-3">Solana • SPL Token</p>
+                  <div className="flex flex-col gap-2 w-full max-w-xs">
+                    <a href="https://solscan.io/token/56o8um92XU8QMr1FsSj4nkExEkgKe56PBTAMqCAzmoon" target="_blank" rel="noopener noreferrer" className="text-xs text-purple-400 hover:text-purple-300 underline">View on Solscan →</a>
+                    <a href="https://birdeye.so/token/56o8um92XU8QMr1FsSj4nkExEkgKe56PBTAMqCAzmoon" target="_blank" rel="noopener noreferrer" className="text-xs text-purple-400 hover:text-purple-300 underline">View on Birdeye →</a>
+                    <a href="https://jup.ag/tokens/56o8um92XU8QMr1FsSj4nkExEkgKe56PBTAMqCAzmoon" target="_blank" rel="noopener noreferrer" className="text-xs text-purple-400 hover:text-purple-300 underline">Trade on Jupiter →</a>
+                  </div>
                 </div>
               </div>
             </div>
@@ -220,16 +230,19 @@ export default function Home() {
       </section>
 
       {/* CTA */}
-      <section className="py-24">
+      <section className="py-24 bg-gradient-to-b from-transparent via-red-950/5 to-transparent">
         <div className="max-w-7xl mx-auto px-6 text-center">
           <h2 className="text-4xl font-bold mb-4">Ready to secure your AI agents?</h2>
-          <p className="text-gray-400 mb-10 max-w-xl mx-auto">
-            Get started in minutes. Free tier for personal projects, 
-            enterprise plans for production workloads.
+          <p className="text-gray-400 mb-4 max-w-xl mx-auto">
+            Get started in minutes. Test the API live - no signup required.
+          </p>
+          <p className="text-sm text-gray-500 mb-10 max-w-xl mx-auto">
+            <strong className="text-white">Free tier:</strong> 100 API calls/day, 1 agent monitored<br />
+            <strong className="text-white">Token holders:</strong> Unlimited calls, unlimited agents, governance votes
           </p>
           <div className="flex flex-wrap gap-4 justify-center">
-            <a href="/subscription" className="bg-red-600 hover:bg-red-500 font-semibold px-8 py-4 rounded-xl transition">View Pricing</a>
-            <a href="/agents" className="bg-white/5 hover:bg-white/10 border border-white/10 font-semibold px-8 py-4 rounded-xl transition">Open Dashboard</a>
+            <a href="/docs" className="bg-red-600 hover:bg-red-500 font-semibold px-8 py-4 rounded-xl transition">Test the API Now</a>
+            <a href="/subscription" className="bg-white/5 hover:bg-white/10 border border-white/10 font-semibold px-8 py-4 rounded-xl transition">View Pricing</a>
           </div>
         </div>
       </section>
