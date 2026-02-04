@@ -213,7 +213,7 @@ if (canRun) {
                 <p className="text-gray-400 text-sm">@protocol14019</p>
               </a>
               <a 
-                href="mailto:support@killswitch.ai"
+                href="mailto:help@protocol14019.com"
                 className="bg-black hover:bg-gray-800 rounded p-4 text-center transition"
               >
                 <svg className="w-8 h-8 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
