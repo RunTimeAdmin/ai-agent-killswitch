@@ -69,19 +69,23 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-6 py-8">
           <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
             <div className="text-center">
-              <p className="text-3xl font-bold text-white">82/82</p>
-              <p className="text-sm text-gray-500 mt-1">Tests Passing</p>
+              <a href="https://github.com/RunTimeAdmin/ai-agent-killswitch/actions" target="_blank" rel="noopener noreferrer" className="group block">
+                <p className="text-3xl font-bold text-white group-hover:text-green-400 transition">82/82</p>
+                <p className="text-sm text-gray-500 mt-1 group-hover:text-gray-400 transition">Tests Passing</p>
+              </a>
             </div>
             <div className="text-center">
               <p className="text-3xl font-bold text-white">&lt;100<span className="text-lg">ms</span></p>
               <p className="text-sm text-gray-500 mt-1">Kill Latency</p>
             </div>
             <div className="text-center">
-              <p className="text-3xl font-bold text-white">99.9<span className="text-lg">%</span></p>
-              <p className="text-sm text-gray-500 mt-1">API Uptime</p>
+              <a href="https://status.killswitch.protocol14019.com" target="_blank" rel="noopener noreferrer" className="group block">
+                <p className="text-3xl font-bold text-white group-hover:text-green-400 transition">99.9<span className="text-lg">%</span></p>
+                <p className="text-sm text-gray-500 mt-1 group-hover:text-gray-400 transition">API Uptime</p>
+              </a>
             </div>
             <div className="text-center">
-              <p className="text-3xl font-bold text-white">10</p>
+              <p className="text-3xl font-bold text-white">6</p>
               <p className="text-sm text-gray-500 mt-1">Security Modules</p>
             </div>
             <div className="text-center">
@@ -155,7 +159,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold mb-4">Defense in depth</h2>
-            <p className="text-gray-400 max-w-2xl mx-auto">10 security modules working together to ensure your AI agents stay within bounds</p>
+            <p className="text-gray-400 max-w-2xl mx-auto">6 security modules working together to ensure your AI agents stay within bounds</p>
           </div>
           <div className="grid md:grid-cols-3 gap-6">
             {[
