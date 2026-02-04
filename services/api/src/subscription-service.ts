@@ -41,9 +41,9 @@ export class SubscriptionService {
       items: [{ price: priceId }],
       payment_behavior: 'default_incomplete',
       expand: ['latest_invoice.payment_intent'],
-      coupon: couponId,
+      discounts: couponId ? [{ coupon: couponId }] : undefined,
       metadata: { userId, tier },
-    });
+    } as any);
 
     const invoice = subscription.latest_invoice as Stripe.Invoice;
     const paymentIntent = (invoice as any)?.payment_intent as Stripe.PaymentIntent;
