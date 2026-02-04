@@ -11,18 +11,6 @@ interface WalletState {
   connecting: boolean;
 }
 
-declare global {
-  interface Window {
-    solana?: {
-      isPhantom?: boolean;
-      connect: () => Promise<{ publicKey: PublicKey }>;
-      disconnect: () => Promise<void>;
-      on: (event: string, callback: (args: any) => void) => void;
-      publicKey?: PublicKey;
-    };
-  }
-}
-
 const SOLANA_RPC = process.env.NEXT_PUBLIC_SOLANA_RPC || 'https://api.mainnet-beta.solana.com';
 
 export function useWallet() {
