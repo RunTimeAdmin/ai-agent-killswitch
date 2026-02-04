@@ -6,7 +6,7 @@ $KILLSWITCH is a comprehensive safety ecosystem for AI agents, powered by Runtim
 
 **🌐 Live Demo:** [killswitch.protocol14019.com](https://killswitch.protocol14019.com)
 
-[![Tests](https://img.shields.io/badge/tests-82%2F82%20passing-brightgreen)](https://github.com/RunTimeAdmin/ai-agent-killswitch/actions) [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE) [![Python](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/) [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)](https://www.typescriptlang.org/) [![Security](https://img.shields.io/badge/security-10%20modules-red)](docs/Security-Hardening.md)
+[![Tests](https://img.shields.io/badge/tests-82%2F82%20passing-brightgreen)](https://github.com/RunTimeAdmin/ai-agent-killswitch/actions) [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE) [![Python](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/) [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)](https://www.typescriptlang.org/) [![Security](https://img.shields.io/badge/security-6%20modules-red)](docs/Security-Hardening.md) [![Uptime](https://img.shields.io/badge/uptime-99.9%25-green)](https://status.killswitch.protocol14019.com)
 
 ---
 
@@ -23,18 +23,14 @@ $KILLSWITCH is a comprehensive safety ecosystem for AI agents, powered by Runtim
 - **📧 Email/SMS Alerts** - Get notified of suspicious behavior
 - **🖥️ Cross-Platform** - Windows, macOS, and Linux support
 
-### Security Hardening (10 Modules, 7,693 Lines)
+### Security Hardening (6 Core Modules)
 
-- **🔒 Fail-Mode Handler** - CLOSED/CACHED/OPEN fail strategies
-- **☠️ Hard Kill** - SIGTERM → SIGKILL escalation
-- **📊 Behavioral Thresholds** - Rate limiting & exfiltration detection
-- **🌐 Network Kill** - OS-level firewall containment
-- **🛡️ Bypass Protection** - Package integrity verification
-- **🧠 Intent Analyzer** - Shadow LLM for obfuscation detection
-- **🎯 Task Adherence** - Agentic drift detection
-- **🗳️ Governance Gate** - LOCAL (instant) vs GOVERNED (vote) separation
-- **📈 Sliding Window** - 1h/6h/24h cumulative thresholds
-- **🎭 Honeypot** - Forensic sandbox with response jitter
+- **🔒 Runtime Fence** - Real-time action validation and monitoring
+- **☠️ Kill Switch** - SIGTERM → SIGKILL emergency termination
+- **📝 Audit Logging** - Complete cryptographic audit trail
+- **⚡ Sub-Second Response** - Kill signals under 100ms
+- **🛡️ SPIFFE Identity** - Cryptographic workload identity
+- **🗳️ Token Governance** - Decentralized oversight with $KILLSWITCH voting
 
 ---
 
