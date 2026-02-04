@@ -1,8 +1,16 @@
 export default function Home() {
   return (
     <main className="min-h-screen bg-[#0a0a0a] text-white">
+      {/* Demo Banner */}
+      <div className="fixed top-0 w-full z-[60] bg-gradient-to-r from-yellow-600 to-orange-600 text-black text-center py-2 px-4">
+        <span className="font-semibold">Demo Preview</span>
+        <span className="mx-2">—</span>
+        <span>This is a product demo showcasing the $KILLSWITCH platform.</span>
+        <a href="/docs" className="ml-2 underline font-semibold hover:no-underline">Learn how it works →</a>
+      </div>
+
       {/* Navigation */}
-      <nav className="fixed top-0 w-full z-50 bg-[#0a0a0a]/80 backdrop-blur-xl border-b border-white/5">
+      <nav className="fixed top-10 w-full z-50 bg-[#0a0a0a]/80 backdrop-blur-xl border-b border-white/5">
         <div className="max-w-7xl mx-auto px-6 h-16 flex justify-between items-center">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center">
@@ -24,16 +32,16 @@ export default function Home() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative pt-32 pb-20 overflow-hidden">
+      <section className="relative pt-40 pb-20 overflow-hidden">
         <div className="absolute inset-0">
           <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-red-600/20 rounded-full blur-[128px]" />
           <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-600/10 rounded-full blur-[128px]" />
         </div>
         <div className="relative max-w-7xl mx-auto px-6">
           <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-4 py-1.5 mb-8">
-              <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-              <span className="text-sm text-gray-300">Now live on Solana Mainnet</span>
+            <div className="inline-flex items-center gap-2 bg-yellow-500/10 border border-yellow-500/30 rounded-full px-4 py-1.5 mb-8">
+              <span className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse" />
+              <span className="text-sm text-yellow-300">Demo Preview — Token live on Solana</span>
             </div>
             <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6">
               The kill switch<br />
