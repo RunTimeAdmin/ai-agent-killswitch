@@ -16,6 +16,7 @@ export default function Home() {
             <a href="/agents" className="text-sm text-gray-400 hover:text-white transition">Dashboard</a>
             <a href="/subscription" className="text-sm text-gray-400 hover:text-white transition">Pricing</a>
             <a href="/governance" className="text-sm text-gray-400 hover:text-white transition">Governance</a>
+            <a href="/docs" className="text-sm text-gray-400 hover:text-white transition">Docs</a>
             <a href="https://github.com/RunTimeAdmin/ai-agent-killswitch" target="_blank" className="text-sm text-gray-400 hover:text-white transition">GitHub</a>
             <a href="/agents" className="bg-red-600 hover:bg-red-500 text-sm font-medium px-4 py-2 rounded-lg transition">Get Started</a>
           </div>
