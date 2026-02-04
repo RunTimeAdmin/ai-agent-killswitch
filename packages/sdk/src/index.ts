@@ -14,7 +14,7 @@ export class KillSwitchClient {
     if (this.apiKey) headers['Authorization'] = 'Bearer ' + this.apiKey;
     const res = await fetch(this.apiUrl + endpoint, { ...options, headers: { ...headers, ...options.headers as Record<string,string> } });
     if (!res.ok) throw new Error('API Error: ' + res.status);
-    return res.json();
+    return res.json() as Promise<T>;
   }
 
   async registerAgent(agent: AgentConfig): Promise<{ success: boolean; agentId: string }> {
