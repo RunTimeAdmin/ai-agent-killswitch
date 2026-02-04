@@ -29,17 +29,15 @@ jobs:
       
       - name: Install Python dependencies
         run: |
-          cd python
-          pip install -r ../requirements.txt
+          pip install -r requirements.txt
           pip install pytest pytest-cov
       
       - name: Run TypeScript tests
         run: npm test
       
       - name: Run Python tests
-        run: |
-          cd python
-          pytest --cov=. --cov-report=xml
+        working-directory: tests/python
+        run: pytest --cov=. --cov-report=xml
         env:
           KILLSWITCH_API_URL: http://localhost:3001
           KILLSWITCH_API_KEY: ${{ secrets.KILLSWITCH_API_KEY }}
