@@ -4,6 +4,8 @@
 
 $KILLSWITCH is a comprehensive safety ecosystem for AI agents, powered by Runtime Fence technology. Think of it as a kill switch for your AI - instantly stop any agent, block dangerous actions, and monitor everything in real-time.
 
+**🌐 Live Demo:** [killswitch.protocol14019.com](https://killswitch.protocol14019.com)
+
 [![Tests](https://img.shields.io/badge/tests-82%2F82%20passing-brightgreen)](https://github.com/RunTimeAdmin/ai-agent-killswitch/actions) [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE) [![Python](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/) [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)](https://www.typescriptlang.org/) [![Security](https://img.shields.io/badge/security-10%20modules-red)](docs/Security-Hardening.md)
 
 ---
@@ -302,10 +304,12 @@ MIT License - see [LICENSE](LICENSE) for details.
 
 ## 🔗 Links
 
-- **Website:** [runtimefence.com](https://runtimefence.com)
-- **Documentation:** [GitHub Wiki](https://github.com/RunTimeAdmin/ai-agent-killswitch/wiki)
-- **Twitter:** [@RunTimeAdmin](https://twitter.com/RunTimeAdmin)
-- **Book:** [The AI Agent Kill Switch](https://runtimefence.com/books/ai-agent-kill-switch)
+- **Live Demo:** [killswitch.protocol14019.com](https://killswitch.protocol14019.com)
+- **Documentation:** [killswitch.protocol14019.com/docs](https://killswitch.protocol14019.com/docs)
+- **GitHub:** [github.com/RunTimeAdmin/ai-agent-killswitch](https://github.com/RunTimeAdmin/ai-agent-killswitch)
+- **Twitter:** [@protocol14019](https://x.com/protocol14019)
+- **Email:** [help@protocol14019.com](mailto:help@protocol14019.com)
+- **Token:** [Buy on Jupiter](https://jup.ag/tokens/56o8um92XU8QMr1FsSj4nkExEkgKe56PBTAMqCAzmoon)
 
 ---
 
@@ -364,6 +368,7 @@ We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guid
 - [x] Usage tracking & limits
 - [x] SPIFFE/SPIRE identity integration
 - [x] Security hardening (10 modules)
+- [x] Live demo site
 - [ ] Mobile app (coming soon)
 
 ---
