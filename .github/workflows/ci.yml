@@ -29,8 +29,8 @@ jobs:
       
       - name: Install Python dependencies
         run: |
-          cd runtime-fence
-          pip install -r requirements.txt
+          cd python
+          pip install -r ../requirements.txt
           pip install pytest pytest-cov
       
       - name: Run TypeScript tests
@@ -38,7 +38,7 @@ jobs:
       
       - name: Run Python tests
         run: |
-          cd runtime-fence
+          cd python
           pytest --cov=. --cov-report=xml
         env:
           KILLSWITCH_API_URL: http://localhost:3001
