@@ -45,6 +45,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     const body: KillRequest = await req.json();
     const { targetSpiffeId, reason, walletAddress } = body;
 
+    // Validate required fields
     if (!targetSpiffeId || !reason) {
       return NextResponse.json(
         { error: 'targetSpiffeId and reason are required' },
@@ -52,36 +53,58 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       );
     }
 
-    // Verify caller owns this agent (or is admin)
-    if (walletAddress) {
-      const { data: agent } = await supabase
-        .from('agent_identities')
-        .select('wallet_address, status')
-        .eq('spiffe_id', targetSpiffeId)
-        .single();
+    // SECURITY FIX: walletAddress is REQUIRED for authorization
+    if (!walletAddress) {
+      return NextResponse.json(
+        { error: 'walletAddress is required for authorization' },
+        { status: 400 }
+      );
+    }
 
-      if (!agent) {
-        return NextResponse.json(
-          { error: 'Agent not found' },
-          { status: 404 }
-        );
-      }
+    // Validate wallet address format
+    if (!/^0x[a-fA-F0-9]{40}$/.test(walletAddress)) {
+      return NextResponse.json(
+        { error: 'Invalid wallet address format' },
+        { status: 400 }
+      );
+    }
 
-      if (agent.wallet_address !== walletAddress) {
-        // Log unauthorized attempt
-        await logKillAttempt(targetSpiffeId, walletAddress, 'denied', reason);
-        return NextResponse.json(
-          { error: 'Unauthorized: You do not own this agent' },
-          { status: 403 }
-        );
-      }
+    // Validate reason length
+    if (reason.length < 3 || reason.length > 500) {
+      return NextResponse.json(
+        { error: 'Reason must be between 3 and 500 characters' },
+        { status: 400 }
+      );
+    }
 
-      if (agent.status === 'revoked') {
-        return NextResponse.json(
-          { error: 'Agent already killed' },
-          { status: 409 }
-        );
-      }
+    // Verify caller owns this agent
+    const { data: agent } = await supabase
+      .from('agent_identities')
+      .select('wallet_address, status')
+      .eq('spiffe_id', targetSpiffeId)
+      .single();
+
+    if (!agent) {
+      return NextResponse.json(
+        { error: 'Agent not found' },
+        { status: 404 }
+      );
+    }
+
+    if (agent.wallet_address !== walletAddress) {
+      // Log unauthorized attempt
+      await logKillAttempt(targetSpiffeId, walletAddress, 'denied', reason);
+      return NextResponse.json(
+        { error: 'Unauthorized: You do not own this agent' },
+        { status: 403 }
+      );
+    }
+
+    if (agent.status === 'revoked') {
+      return NextResponse.json(
+        { error: 'Agent already killed' },
+        { status: 409 }
+      );
     }
 
     // EXECUTE KILL - Revoke SPIFFE identity
