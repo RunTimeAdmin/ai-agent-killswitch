@@ -8,7 +8,7 @@ $KILLSWITCH is a comprehensive safety ecosystem for ALL AI agents, powered by Ru
 
 **🌐 Live Demo:** [killswitch.protocol14019.com](https://killswitch.protocol14019.com)
 
-[![Tests](https://img.shields.io/badge/tests-82%2F82%20passing-brightgreen)](https://github.com/RunTimeAdmin/ai-agent-killswitch/actions) [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE) [![Python](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/) [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)](https://www.typescriptlang.org/) [![Security](https://img.shields.io/badge/security-6%20modules-red)](docs/Security-Hardening.md) [![Uptime](https://img.shields.io/badge/uptime-99.9%25-green)](https://status.killswitch.protocol14019.com)
+[![Tests](https://img.shields.io/badge/tests-passing-brightgreen)](https://github.com/RunTimeAdmin/ai-agent-killswitch/actions) [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE) [![Python](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/) [![PyPI](https://img.shields.io/badge/pypi-runtime--fence-blue)](https://pypi.org/project/runtime-fence/)
 
 ---
 
@@ -31,8 +31,8 @@ $KILLSWITCH is a comprehensive safety ecosystem for ALL AI agents, powered by Ru
 - **☠️ Kill Switch** - SIGTERM → SIGKILL emergency termination
 - **📝 Audit Logging** - Complete cryptographic audit trail
 - **⚡ Sub-Second Response** - Kill signals under 100ms
-- **🛡️ SPIFFE Identity** - Cryptographic workload identity
-- **🗳️ Token Governance** - Decentralized oversight with $KILLSWITCH voting
+- **🛡️ Offline Mode** - Works without external dependencies
+- **🎯 Risk Scoring** - Automatic threat assessment (0-100)
 
 ---
 
@@ -242,63 +242,77 @@ agent = create_fenced_agent(
 
 ## 🔌 API Reference
 
-### REST Endpoints
+### Python API
 
-| Endpoint | Method | Description |
-| --- | --- | --- |
-| `/api/runtime/assess` | POST | Validate an action |
-| `/api/runtime/kill` | POST | Activate kill switch |
-| `/api/runtime/status` | GET | Get fence status |
-| `/api/settings` | GET/POST | Manage settings |
-| `/api/audit-logs` | GET | View audit logs |
-| `/api/auth/register` | POST | Create account |
-| `/api/auth/login` | POST | Get JWT token |
+```python
+from runtime_fence import RuntimeFence, FenceConfig, RiskLevel
 
-### Authentication
+# Initialize
+fence = RuntimeFence(FenceConfig(
+    agent_id="my-agent",
+    blocked_actions=["delete"],
+    spending_limit=100.0
+))
+
+# Validate actions
+result = fence.validate(action="delete", target="file.txt")
+print(result.allowed)      # False
+print(result.risk_score)   # 50
+print(result.reasons)      # ["Action 'delete' is blocked"]
+
+# Kill switch
+fence.kill("Emergency stop")
+
+# Resume operations
+fence.resume()
+
+# Get status
+status = fence.get_status()
+print(status.is_killed)    # True/False
+print(status.total_validations)  # Count
+```
+
+### CLI Commands
 
 ```bash
-# Using JWT token
-curl -H "Authorization: Bearer <token>" https://api.runtimefence.com/api/runtime/status
-
-# Using API key
-curl -H "X-API-Key: ks_xxxxx" https://api.runtimefence.com/api/runtime/status
+fence test               # Run safety tests
+fence status             # Show fence status  
+fence version            # Display version
 ```
+
+For REST API documentation (coming soon), see [API-Reference.md](docs/API-Reference.md).
 
 ---
 
 ## ⚙️ Configuration
 
-### Environment Variables
+### Environment Variables (Optional)
 
 ```bash
-# API
-KILLSWITCH_API_URL=http://localhost:3001
-KILLSWITCH_API_KEY=your_api_key
+# Agent identification
+FENCE_AGENT_ID=my-agent
 
-# Alerts
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=587
-SMTP_USER=your@email.com
-SMTP_PASSWORD=your_password
-ALERT_TO_EMAILS=admin@company.com
-
-# SMS (Twilio)
-TWILIO_SID=your_sid
-TWILIO_TOKEN=your_token
-TWILIO_FROM=+1234567890
-ALERT_SMS_NUMBERS=+1234567890
+# Logging
+FENCE_LOG_LEVEL=INFO  # DEBUG, INFO, WARNING, ERROR
 ```
 
-### Settings UI
+### Configuration via Code
 
-Access the web dashboard at `http://localhost:3000/settings` to configure:
+```python
+from runtime_fence import RuntimeFence, FenceConfig, RiskLevel
 
-- Agent presets (Coding, Email, Data, Web, Autonomous)
-- Blocked actions and targets
-- Spending limits
-- Risk thresholds
-- Auto-kill settings
-- Email/SMS alerts
+config = FenceConfig(
+    agent_id="my-agent",
+    blocked_actions=["delete", "exec"],
+    blocked_targets=[".env", "production"],
+    spending_limit=100.0,
+    risk_threshold=RiskLevel.MEDIUM,  # LOW, MEDIUM, HIGH, CRITICAL
+    auto_kill_on_critical=True,
+    offline_mode=True
+)
+
+fence = RuntimeFence(config)
+```
 
 ---
 
@@ -307,17 +321,19 @@ Access the web dashboard at `http://localhost:3000/settings` to configure:
 ```bash
 # Clone repo
 git clone https://github.com/RunTimeAdmin/ai-agent-killswitch.git
-cd ai-agent-killswitch
+cd ai-agent-killswitch/packages/python
 
-# Install dependencies
-npm install
-
-# Start development servers
-npm run dev
+# Install in development mode
+pip install -e .
 
 # Run tests
-npm test
+fence test
 ```
+
+For detailed integration guides, see:
+- [LangChain Integration](docs/Integration-Guide.md#langchain)
+- [AutoGPT Integration](docs/Integration-Guide.md#autogpt)
+- [Custom Agent Integration](docs/Integration-Guide.md#custom-agents)
 
 ---
 
@@ -325,16 +341,17 @@ npm test
 
 ```
 ai-agent-killswitch/
-├── apps/
-│   └── web/              # Next.js dashboard
 ├── packages/
-│   ├── core/             # Kill switch engine
-│   ├── sdk/              # TypeScript SDK
-│   ├── cli/              # Command-line tools
-│   └── python/           # Python fence wrapper
-├── services/
-│   └── api/              # Express REST API
-└── docs/                 # Documentation
+│   └── python/              # Runtime Fence Python package
+│       ├── runtime_fence.py # Core safety engine
+│       ├── cli.py           # Command-line interface
+│       └── langchain_integration.py  # LangChain helpers
+├── docs/                    # Integration guides
+│   ├── Integration-Guide.md
+│   └── Troubleshooting-FAQ.md
+└── wiki/                    # Documentation
+    ├── Quick-Start.md
+    └── Configuration.md
 ```
 
 ---
@@ -343,48 +360,37 @@ ai-agent-killswitch/
 
 Built by **RunTimeAdmin** | David Cooper | CCIE #14019
 
-**Related Projects:**
+**Why Runtime Fence Matters:**
 
-- 📖 [The AI Agent Kill Switch Book](https://runtimefence.com/books)
-- 🛡️ [$KILLSWITCH Documentation](https://github.com/RunTimeAdmin/ai-agent-killswitch/wiki)
-- 🔴 [$KILLSWITCH Token](https://runtimefence.com/killswitch)
+As AI agents become more autonomous, the risk of unintended actions increases exponentially. Runtime Fence provides the safety layer that:
+- Prevents agents from deleting critical files
+- Blocks unauthorized API calls
+- Limits spending and resource usage
+- Provides complete audit trails
+- Enables instant emergency shutdowns
 
-**Why This Matters:**
-
-> "When AI agents go rogue in Kubernetes, you need a kill switch. Not a button. A network-level containment system."
-
-As Fortune, Palo Alto Networks, and Andrej Karpathy warn of the emerging AI security crisis, we're building real solutions—not just launching tokens.
-
-$KILLSWITCH provides the guardrails that prevent AI agents from causing catastrophic damage, while the token enables community governance and sustainable development of the ecosystem.
+**Use Cases:**
+- Coding assistants that modify your codebase
+- Autonomous agents with system access
+- Data processing agents handling sensitive information
+- Web automation with payment capabilities
+- Any AI agent that needs guardrails
 
 ---
 
-## 📚 Documentation
+## 🔗 Links
 
-| Document | Description |
-|----------|-------------|
-| [API Reference](docs/API-Reference.md) | Full REST API documentation with examples |
-| [Integration Guide](docs/Integration-Guide.md) | LangChain, AutoGPT, OpenAI, Anthropic integration |
-| [Troubleshooting & FAQ](docs/Troubleshooting-FAQ.md) | Common issues and solutions |
-| [Security Hardening](wiki/Security-Hardening.md) | 10 security modules documentation |
-| [GitHub Wiki](https://github.com/RunTimeAdmin/ai-agent-killswitch/wiki) | Full wiki documentation |
+- **GitHub:** [github.com/RunTimeAdmin/ai-agent-killswitch](https://github.com/RunTimeAdmin/ai-agent-killswitch)
+- **PyPI Package:** [pypi.org/project/runtime-fence](https://pypi.org/project/runtime-fence)
+- **Documentation:** [GitHub Wiki](https://github.com/RunTimeAdmin/ai-agent-killswitch/wiki)
+- **Issues:** [Report bugs or request features](https://github.com/RunTimeAdmin/ai-agent-killswitch/issues)
+- **Twitter:** [@protocol14019](https://x.com/protocol14019)
 
 ---
 
 ## 📜 License
 
 MIT License - see [LICENSE](LICENSE) for details.
-
----
-
-## 🔗 Links
-
-- **Live Demo:** [killswitch.protocol14019.com](https://killswitch.protocol14019.com)
-- **Documentation:** [killswitch.protocol14019.com/docs](https://killswitch.protocol14019.com/docs)
-- **GitHub:** [github.com/RunTimeAdmin/ai-agent-killswitch](https://github.com/RunTimeAdmin/ai-agent-killswitch)
-- **Twitter:** [@protocol14019](https://x.com/protocol14019)
-- **Email:** [help@protocol14019.com](mailto:help@protocol14019.com)
-- **Token:** [Buy on Jupiter](https://jup.ag/tokens/56o8um92XU8QMr1FsSj4nkExEkgKe56PBTAMqCAzmoon)
 
 ---
 
@@ -452,79 +458,53 @@ We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guid
 
 ## 📊 Status
 
-- [x] Core kill switch engine
-- [x] Python SDK
-- [x] TypeScript SDK
-- [x] REST API
-- [x] Web dashboard
-- [x] CLI tools
-- [x] Desktop tray app
-- [x] Audit logging
-- [x] Risk scoring
-- [x] USD Subscriptions (Stripe)
-- [x] Crypto payments (SOL/USDC)
-- [x] $KILLSWITCH token utility
-- [x] Token-weighted governance
-- [x] Usage tracking & limits
-- [x] SPIFFE/SPIRE identity integration
-- [x] Security hardening (10 modules)
-- [x] Live demo site
-- [ ] Mobile app (coming soon)
+**Core Features (Production Ready):**
+- [x] Kill switch engine (sub-100ms response)
+- [x] Python SDK (`pip install runtime-fence`)
+- [x] Action blocking & target protection
+- [x] Risk scoring & audit logging
+- [x] CLI tools (`fence test`, `fence status`)
+- [x] Offline mode (no API required)
+- [x] LangChain integration
 
----
-
-## 💰 $KILLSWITCH Token
-
-**Contract:** `56o8um92XU8QMr1FsSj4nkExEkgKe56PBTAMqCAzmoon`
-
-[Buy on Jupiter](https://jup.ag/tokens/56o8um92XU8QMr1FsSj4nkExEkgKe56PBTAMqCAzmoon)
-
-### Token Holder Benefits
-
-| Holdings | Discount | Governance |
-|----------|----------|------------|
-| 1,000+ | - | Vote on proposals |
-| 10,000+ | 10% off | Vote on proposals |
-| 100,000+ | 20% off | Vote on proposals |
-| 1,000,000+ | 40% off | 2x voting power |
-
-### Subscription Tiers
-
-| Tier | Price | With Max Discount |
-|------|-------|-------------------|
-| Basic | $5/mo | $3/mo |
-| Pro | $50/mo | $30/mo |
-| Team | $250/mo | $150/mo |
-| Enterprise | $1,000/mo | $600/mo |
-| VIP | $5,000/mo | $3,000/mo |
+**Coming Soon:**
+- [ ] TypeScript SDK
+- [ ] Web dashboard
+- [ ] REST API service
+- [ ] Mobile app
 
 ---
 
 ## 🎯 Roadmap
 
-### Phase 1: Core Platform ✅
+### Now: Core Safety (Q1 2025)
+- ✅ Python package on PyPI
+- ✅ Universal agent support
+- ✅ Offline-first architecture
+- 🚧 TypeScript/JavaScript SDK
 
-- Runtime Fence engine
-- Python and TypeScript SDKs
-- REST API
-- Web dashboard
+### Next: Integrations (Q2 2025)
+- LangSmith integration
+- CrewAI native support
+- Anthropic Claude tools
+- OpenAI Assistants API
 
-### Phase 2: Monetization ✅
-
-- USD subscriptions (Stripe)
-- Crypto payments (SOL/USDC)
-- $KILLSWITCH token utility
-- Token-weighted governance
-- Usage-based tier limits
-
-### Phase 3: Ecosystem 🚧
-
-- Mobile app (iOS/Android)
-- Third-party integrations
-- Plugin marketplace
-- Enterprise features
+### Future: Enterprise (Q3 2025)
 - Multi-agent orchestration
+- Centralized dashboard
+- Team collaboration
+- Advanced analytics
 
 ---
 
-**$KILLSWITCH - Because every AI needs an off switch.**
+## 🔗 Links
+
+- **GitHub:** [github.com/RunTimeAdmin/ai-agent-killswitch](https://github.com/RunTimeAdmin/ai-agent-killswitch)
+- **PyPI Package:** [pypi.org/project/runtime-fence](https://pypi.org/project/runtime-fence)
+- **Documentation:** [GitHub Wiki](https://github.com/RunTimeAdmin/ai-agent-killswitch/wiki)
+- **Issues:** [Report bugs or request features](https://github.com/RunTimeAdmin/ai-agent-killswitch/issues)
+- **Twitter:** [@protocol14019](https://x.com/protocol14019)
+
+---
+
+**🛡️ Runtime Fence - Because every AI needs an off switch.**
