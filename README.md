@@ -1,8 +1,10 @@
 # $KILLSWITCH
 
-**AI Agent Safety Control - Emergency kill switch and guardrails for AI agents**
+**Universal AI Agent Safety Control - Emergency kill switch for ANY AI agent**
 
-$KILLSWITCH is a comprehensive safety ecosystem for AI agents, powered by Runtime Fence technology. Think of it as a kill switch for your AI - instantly stop any agent, block dangerous actions, and monitor everything in real-time.
+$KILLSWITCH is a comprehensive safety ecosystem for ALL AI agents, powered by Runtime Fence technology. Whether it's a coding assistant, autonomous agent, trading bot, or data analyst - instantly stop any agent, block dangerous actions, and monitor everything in real-time.
+
+**Works with:** LangChain • AutoGPT • Copilot • Cursor • Aider • CrewAI • BabyAGI • Custom Agents • Trading Bots • Email Bots • Web Scrapers • Data Analysts
 
 **🌐 Live Demo:** [killswitch.protocol14019.com](https://killswitch.protocol14019.com)
 
@@ -39,7 +41,7 @@ $KILLSWITCH is a comprehensive safety ecosystem for AI agents, powered by Runtim
 ### Installation
 
 ```bash
-pip install killswitch-agent
+pip install runtime-fence
 ```
 
 Or clone and install:
@@ -120,17 +122,94 @@ fence start              # Launch tray app
 
 ---
 
-## 🤖 Supported Agent Types
+## 🤖 Universal Agent Protection
 
-$KILLSWITCH includes presets for common AI agents:
+Runtime Fence works with **ANY** Python-based AI agent. Here are real-world examples:
 
-| Agent Type | Blocked Actions | Use Case |
-| --- | --- | --- |
-| **Coding Assistant** | exec, shell, rm, sudo | Copilot, Cursor, Aider |
-| **Email Bot** | send_bulk, forward_all, export | Email automation |
-| **Data Analyst** | delete, drop_table, export_pii | Data processing |
-| **Web Browser** | login, purchase, submit_form | Web scraping |
-| **Autonomous Agent** | spawn_agent, modify_self, execute_code | AutoGPT, BabyAGI |
+### Coding Assistants
+**Agents:** GitHub Copilot, Cursor, Aider, Cody  
+**Risks Blocked:** Executing shell commands, deleting files, modifying system configs  
+**Example:**
+```python
+fence = RuntimeFence(FenceConfig(
+    agent_id="cursor-assistant",
+    blocked_actions=["exec", "shell", "rm", "sudo"],
+    blocked_targets=[".git/", ".env", "~/.ssh/"]
+))
+```
+
+### Autonomous Agents  
+**Agents:** AutoGPT, BabyAGI, AgentGPT, SuperAGI  
+**Risks Blocked:** Self-modification, spawning agents, unrestricted API calls  
+**Example:**
+```python
+fence = RuntimeFence(FenceConfig(
+    agent_id="autogpt",
+    blocked_actions=["spawn_agent", "modify_self", "execute_code"],
+    spending_limit=50.0
+))
+```
+
+### Data Analysts
+**Agents:** LangChain data agents, Pandas AI, custom ETL bots  
+**Risks Blocked:** Deleting databases, exporting PII, dropping tables  
+**Example:**
+```python
+fence = RuntimeFence(FenceConfig(
+    agent_id="data-analyst",
+    blocked_actions=["delete", "drop_table", "export_pii"],
+    blocked_targets=["production_db", "customer_data"]
+))
+```
+
+### Web Automation
+**Agents:** Selenium bots, Playwright agents, web scrapers  
+**Risks Blocked:** Form submissions, purchases, credential theft  
+**Example:**
+```python
+fence = RuntimeFence(FenceConfig(
+    agent_id="web-scraper",
+    blocked_actions=["login", "purchase", "submit_form"],
+    blocked_targets=["payment", "checkout", "admin"]
+))
+```
+
+### Email Bots
+**Agents:** Gmail automation, email marketing bots, support agents  
+**Risks Blocked:** Bulk sending, forwarding all emails, exporting contacts  
+**Example:**
+```python
+fence = RuntimeFence(FenceConfig(
+    agent_id="email-bot",
+    blocked_actions=["send_bulk", "forward_all", "export_contacts"],
+    spending_limit=100.0
+))
+```
+
+### Trading Bots
+**Agents:** Crypto trading bots, stock trading agents, DeFi automation  
+**Risks Blocked:** High-value transfers, unauthorized withdrawals  
+**Example:**
+```python
+fence = RuntimeFence(FenceConfig(
+    agent_id="trading-bot",
+    blocked_actions=["withdraw", "transfer"],
+    spending_limit=1000.0,
+    blocked_targets=["wallet_private_key"]
+))
+```
+
+### LangChain Agents
+**Any LangChain agent with tools**  
+**Full integration example:** See [langchain_integration.py](packages/python/langchain_integration.py)  
+```python
+from langchain_integration import create_fenced_agent, Preset
+
+agent = create_fenced_agent(
+    preset=Preset.CODING_ASSISTANT,
+    agent_id="langchain-coder"
+)
+```
 
 ---
 
@@ -311,26 +390,51 @@ MIT License - see [LICENSE](LICENSE) for details.
 
 ## ⚡ Quick Demo
 
+### Stop a Coding Assistant from Deleting Files
 ```python
-# Stop an agent from deleting files
-from runtime_fence import RuntimeFence
+from runtime_fence import RuntimeFence, FenceConfig
 
-fence = RuntimeFence()
-result = fence.validate("delete", "production_database.sql")
+fence = RuntimeFence(FenceConfig(
+    agent_id="cursor-assistant",
+    blocked_actions=["delete", "rm"]
+))
+
+result = fence.validate("delete", "important_code.py")
 # Returns: {"allowed": False, "reasons": ["Action 'delete' is blocked"]}
+```
 
-# Get risk score for a transaction
-result = fence.validate("transfer", "0x...", amount=1000000)
-# Returns: {"allowed": False, "risk_score": 95, "reasons": ["High-value transfer blocked"]}
+### Protect Autonomous Agents from Self-Modification
+```python
+fence = RuntimeFence(FenceConfig(
+    agent_id="autogpt",
+    blocked_actions=["modify_self", "spawn_agent"]
+))
 
-# Emergency stop
-fence.kill("Suspicious activity detected")
-# All agent operations halted immediately
+result = fence.validate("modify_self", "autogpt_config.json")
+# Returns: {"allowed": False, "risk_score": 85, "reasons": ["Action 'modify_self' is blocked"]}
+```
+
+### Block Data Agents from Exporting PII
+```python
+fence = RuntimeFence(FenceConfig(
+    agent_id="data-analyst",
+    blocked_actions=["export_pii"],
+    blocked_targets=["customer_emails", "ssn"]
+))
+
+result = fence.validate("export", "customer_emails.csv")
+# Returns: {"allowed": False, "reasons": ["Target 'customer_emails' is blocked"]}
+```
+
+### Emergency Stop ANY Agent
+```python
+fence.kill("Suspicious behavior detected")
+# All agent operations halted immediately across ALL agents
 ```
 
 ---
 
-**🛡️ Protect your AI. Before it protects itself.**
+**🛡️ Protect ANY AI Agent. Before it's too late.**
 
 ---
 

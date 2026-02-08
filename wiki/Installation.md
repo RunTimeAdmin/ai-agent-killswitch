@@ -10,7 +10,7 @@ Install $KILLSWITCH to add emergency stop capabilities to your AI agents.
 ## Quick Install (pip)
 
 ```bash
-pip install killswitch-agent
+pip install runtime-fence
 ```
 
 ## Install from Source

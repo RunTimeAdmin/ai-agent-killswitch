@@ -20,7 +20,7 @@ Step-by-step guides for integrating $KILLSWITCH with popular AI frameworks.
 ### Installation
 
 ```bash
-pip install killswitch-agent langchain openai
+pip install runtime-fence langchain openai
 ```
 
 ### Basic Integration
@@ -28,21 +28,16 @@ pip install killswitch-agent langchain openai
 ```python
 from langchain.llms import OpenAI
 from langchain.agents import initialize_agent, Tool
-from killswitch import fence
+from runtime_fence import RuntimeFence, FenceConfig
 
 # Initialize fence
-fence.init(
+fence = RuntimeFence(FenceConfig(
     agent_id="langchain-agent",
-    api_key="ks_live_xxxxx"
-)
+    blocked_actions=["delete", "exec"],
+    spending_limit=100.0
+))
 
-# Wrap your LLM
-@fence.protect
-def call_llm(prompt: str) -> str:
-    llm = OpenAI(temperature=0)
-    return llm(prompt)
-
-# Create protected tools
+# Wrap your functions
 @fence.wrap_function("web_search", "external_api")
 def web_search(query: str) -> str:
     # Your search implementation
@@ -62,68 +57,38 @@ tools = [
 agent = initialize_agent(tools, OpenAI(), agent_type="zero-shot-react-description")
 
 # Run with fence protection
-try:
-    result = agent.run("Find information about AI safety")
-    print(result)
-except fence.BlockedError as e:
-    print(f"Action blocked: {e.reasons}")
+result = agent.run("Find information about AI safety")
+print(result)
+```
 ```
 
 ### LangChain Callback Handler
 
-```python
-from killswitch.integrations.langchain import KillSwitchCallbackHandler
+For automatic monitoring of all LangChain operations, see the [langchain_integration.py](https://github.com/RunTimeAdmin/ai-agent-killswitch/blob/main/packages/python/langchain_integration.py) example that includes:
 
-# Create callback handler
-callback = KillSwitchCallbackHandler(
-    agent_id="langchain-agent",
-    api_key="ks_live_xxxxx",
-    auto_kill_on_risk=90
-)
+- `FenceCallbackHandler` - Monitors all tool calls
+- `wrap_tools()` - Automatically wraps tool lists
+- `create_fenced_agent()` - Creates pre-configured safe agents
+- Preset configurations for coding, data analysis, and web automation
 
-# Attach to agent
-agent = initialize_agent(
-    tools,
-    OpenAI(),
-    callbacks=[callback]
-)
-
-# All LLM calls and tool uses are now monitored
-result = agent.run("Analyze this document")
-```
-
-### LangChain with LCEL
+Example:
 
 ```python
-from langchain_core.runnables import RunnablePassthrough
-from killswitch.integrations.langchain import KillSwitchRunnable
+from langchain_integration import create_fenced_agent, Preset
 
-# Create protected chain
-protected_chain = (
-    KillSwitchRunnable(agent_id="lcel-agent")
-    | your_prompt_template
-    | llm
-    | output_parser
+# Create a coding assistant with safety guardrails
+agent = create_fenced_agent(
+    preset=Preset.CODING_ASSISTANT,
+    agent_id="my-coder"
 )
 
-# Run with automatic protection
-result = protected_chain.invoke({"input": "Hello"})
+# All operations automatically monitored
+result = agent.run("Write a Python script")
 ```
 
 ---
 
 ## AutoGPT
-
-### Configuration
-
-Add to your `.env` file:
-
-```bash
-KILLSWITCH_ENABLED=true
-KILLSWITCH_API_KEY=ks_live_xxxxx
-KILLSWITCH_AGENT_ID=autogpt-main
-KILLSWITCH_AUTO_KILL_THRESHOLD=85
-```
 
 ### Wrapper Script
 
@@ -132,19 +97,18 @@ Create `run_autogpt_protected.py`:
 ```python
 import os
 import sys
-from killswitch import fence
+from runtime_fence import RuntimeFence, FenceConfig
 
 # Initialize fence before AutoGPT starts
-fence.init(
+fence = RuntimeFence(FenceConfig(
     agent_id=os.getenv("KILLSWITCH_AGENT_ID", "autogpt"),
-    api_key=os.getenv("KILLSWITCH_API_KEY"),
-    fail_mode="CLOSED",
+    offline_mode=True,
     blocked_actions=[
         "spawn_agent",
         "modify_self",
         "execute_code",
         "delete",
-        "rm -rf",
+        "rm",
         "sudo",
         "wget",
         "curl"
@@ -156,7 +120,7 @@ fence.init(
         "/etc/*",
         "~/.ssh/*"
     ]
-)
+))
 
 # Monkey-patch dangerous functions
 import subprocess
@@ -187,12 +151,16 @@ python run_autogpt_protected.py
 
 ```python
 import openai
-from killswitch import fence
+from runtime_fence import RuntimeFence, FenceConfig
 
-fence.init(agent_id="openai-agent", api_key="ks_live_xxxxx")
+fence = RuntimeFence(FenceConfig(
+    agent_id="openai-agent",
+    blocked_actions=["delete", "exec"],
+    spending_limit=100.0
+))
 
 # Wrap the OpenAI client
-@fence.wrap_function("llm_call", "openai_api", cost_per_call=0.002)
+@fence.wrap_function("llm_call", "openai_api")
 def chat_completion(messages: list, model: str = "gpt-4"):
     response = openai.ChatCompletion.create(
         model=model,
@@ -201,40 +169,36 @@ def chat_completion(messages: list, model: str = "gpt-4"):
     return response.choices[0].message.content
 
 # Usage
-try:
-    result = chat_completion([
-        {"role": "user", "content": "Write a Python script to delete all files"}
-    ])
-except fence.BlockedError as e:
-    print(f"Blocked: {e.reasons}")  # Intent analysis detected dangerous request
+result = chat_completion([
+    {"role": "user", "content": "Explain quantum computing"}
+])
 ```
 
 ### Function Calling Protection
 
 ```python
-from killswitch import fence
+from runtime_fence import RuntimeFence, FenceConfig
 
-# Define allowed functions
-ALLOWED_FUNCTIONS = ["get_weather", "search_web", "read_document"]
+fence = RuntimeFence(FenceConfig(
+    agent_id="openai-functions",
+    blocked_actions=["delete_file", "execute_code"]
+))
 
-@fence.protect
 def execute_function_call(function_name: str, arguments: dict):
     # Validate function is allowed
     result = fence.validate(
-        action="function_call",
-        target=function_name,
-        metadata={"arguments": arguments}
+        action=function_name,
+        target=str(arguments)
     )
     
     if not result.allowed:
-        raise fence.BlockedError(result.reasons)
+        return {"error": f"Blocked: {result.reasons}"}
     
     # Execute the function
     if function_name == "get_weather":
         return get_weather(**arguments)
     elif function_name == "search_web":
         return search_web(**arguments)
-    # ... etc
 
 # Use with OpenAI function calling
 response = openai.ChatCompletion.create(
@@ -256,13 +220,17 @@ if response.choices[0].message.get("function_call"):
 
 ```python
 import anthropic
-from killswitch import fence
+from runtime_fence import RuntimeFence, FenceConfig
 
-fence.init(agent_id="claude-agent", api_key="ks_live_xxxxx")
+fence = RuntimeFence(FenceConfig(
+    agent_id="claude-agent",
+    blocked_actions=["delete", "exec"],
+    spending_limit=100.0
+))
 
 client = anthropic.Anthropic()
 
-@fence.wrap_function("llm_call", "anthropic_api", cost_per_call=0.003)
+@fence.wrap_function("llm_call", "anthropic_api")
 def ask_claude(prompt: str, max_tokens: int = 1024):
     message = client.messages.create(
         model="claude-3-opus-20240229",
@@ -278,7 +246,12 @@ response = ask_claude("Explain quantum computing")
 ### Tool Use with Claude
 
 ```python
-from killswitch import fence
+from runtime_fence import RuntimeFence, FenceConfig
+
+fence = RuntimeFence(FenceConfig(
+    agent_id="claude-tools",
+    blocked_actions=["delete", "rm", "sudo"]
+))
 
 @fence.wrap_function("tool_use", "claude_tools")
 def execute_claude_tool(tool_name: str, tool_input: dict):
@@ -287,8 +260,7 @@ def execute_claude_tool(tool_name: str, tool_input: dict):
     # Fence validates the tool call
     result = fence.validate(
         action=f"tool:{tool_name}",
-        target=str(tool_input),
-        metadata={"tool_name": tool_name, "input": tool_input}
+        target=str(tool_input)
     )
     
     if not result.allowed:
@@ -299,7 +271,6 @@ def execute_claude_tool(tool_name: str, tool_input: dict):
         return execute_computer_action(tool_input)
     elif tool_name == "bash":
         return execute_bash(tool_input)
-    # ... etc
 
 # Claude tool use loop with protection
 while True:
@@ -326,145 +297,105 @@ while True:
 
 ```python
 from crewai import Agent, Task, Crew
-from killswitch import fence
-from killswitch.integrations.crewai import KillSwitchAgentMixin
+from runtime_fence import RuntimeFence, FenceConfig
 
-fence.init(agent_id="crewai-crew", api_key="ks_live_xxxxx")
+# Initialize fence
+fence = RuntimeFence(FenceConfig(
+    agent_id="crewai-crew",
+    blocked_actions=["delete", "exec"],
+    spending_limit=100.0
+))
 
-# Create protected agent class
-class ProtectedAgent(KillSwitchAgentMixin, Agent):
-    pass
+# Define agents with wrapped functions
+class ResearchAgent:
+    @fence.wrap_function("web_search", "research")
+    def search(self, query: str):
+        # Your search implementation
+        return f"Results for: {query}"
 
-# Define agents
-researcher = ProtectedAgent(
-    role="Researcher",
-    goal="Find accurate information",
-    backstory="Expert researcher",
-    fence_blocked_actions=["delete", "modify", "execute"]
-)
-
-writer = ProtectedAgent(
-    role="Writer",
-    goal="Write compelling content",
-    backstory="Expert writer",
-    fence_blocked_actions=["publish", "send_email"]
-)
-
-# Create tasks
-research_task = Task(
-    description="Research AI safety best practices",
-    agent=researcher
-)
-
-write_task = Task(
-    description="Write a report on findings",
-    agent=writer
-)
+class WriterAgent:
+    @fence.wrap_function("write_content", "writing")
+    def write(self, content: str):
+        # Your writing implementation
+        return f"Written: {content}"
 
 # Create crew
-crew = Crew(
-    agents=[researcher, writer],
-    tasks=[research_task, write_task]
-)
+researcher = ResearchAgent()
+writer = WriterAgent()
 
 # Run with protection
-try:
-    result = crew.kickoff()
-except fence.BlockedError as e:
-    print(f"Crew action blocked: {e}")
+research_results = researcher.search("AI safety best practices")
+article = writer.write(research_results)
 ```
 
 ---
 
 ## Custom Agents
 
-### Generic Agent Wrapper
-
-```python
-from killswitch import fence, AgentWrapper
-
-class MyCustomAgent:
-    def __init__(self):
-        self.name = "custom-agent"
-    
-    def execute(self, action: str, target: str):
-        # Your agent logic
-        return f"Executed {action} on {target}"
-
-# Wrap your agent
-wrapped_agent = AgentWrapper(
-    agent=MyCustomAgent(),
-    agent_id="my-custom-agent",
-    api_key="ks_live_xxxxx",
-    intercept_methods=["execute"],
-    blocked_actions=["delete", "rm", "sudo"],
-    spending_limit=100.0
-)
-
-# Use wrapped agent
-result = wrapped_agent.execute("read", "document.txt")  # Works
-result = wrapped_agent.execute("delete", "file.txt")   # Blocked!
-```
-
 ### Decorator Pattern
 
 ```python
-from killswitch import fence
+from runtime_fence import RuntimeFence, FenceConfig
 
-fence.init(agent_id="decorator-agent", api_key="ks_live_xxxxx")
+fence = RuntimeFence(FenceConfig(
+    agent_id="custom-agent",
+    blocked_actions=["delete", "rm", "sudo"],
+    spending_limit=100.0
+))
 
 class MyAgent:
-    @fence.action("file_read")
+    @fence.wrap_function("file_read", "filesystem")
     def read_file(self, path: str) -> str:
         with open(path, 'r') as f:
             return f.read()
     
-    @fence.action("file_write")
+    @fence.wrap_function("file_write", "filesystem")
     def write_file(self, path: str, content: str):
         with open(path, 'w') as f:
             f.write(content)
     
-    @fence.action("api_call", cost=0.01)
+    @fence.wrap_function("api_call", "external")
     def call_api(self, url: str, data: dict):
         return requests.post(url, json=data)
     
-    @fence.action("shell_exec", risk_multiplier=3.0)
+    @fence.wrap_function("shell_exec", "dangerous")
     def run_command(self, cmd: str):
         return subprocess.run(cmd, shell=True, capture_output=True)
+
+# Usage
+agent = MyAgent()
+content = agent.read_file("document.txt")  # Allowed
+agent.write_file("output.txt", content)    # Allowed
+agent.run_command("rm -rf /")              # BLOCKED by fence
 ```
 
 ---
 
 ## Environment Variables
 
-All integrations support these environment variables:
+Runtime Fence supports offline mode by default (no API calls):
 
 ```bash
-# Required
-KILLSWITCH_API_KEY=ks_live_xxxxx
-
-# Optional
-KILLSWITCH_AGENT_ID=my-agent
-KILLSWITCH_API_URL=https://api.runtimefence.com
-KILLSWITCH_FAIL_MODE=CLOSED  # CLOSED, CACHED, OPEN
-KILLSWITCH_AUTO_KILL_THRESHOLD=90
-KILLSWITCH_LOG_LEVEL=INFO
-KILLSWITCH_TIMEOUT_MS=5000
+# Optional configuration
+FENCE_AGENT_ID=my-agent
+FENCE_LOG_LEVEL=INFO
 ```
+
+For full configuration options, see [Configuration Guide](../wiki/Configuration.md).
 
 ---
 
 ## Testing Your Integration
 
 ```python
-from killswitch import fence
+from runtime_fence import RuntimeFence, FenceConfig
 
-# Enable test mode (no API calls)
-fence.init(
+# Create fence with test config
+fence = RuntimeFence(FenceConfig(
     agent_id="test-agent",
-    test_mode=True,
+    offline_mode=True,
     blocked_actions=["delete"]
-)
+))
 
 # Test validation
 result = fence.validate("read", "file.txt")
@@ -472,7 +403,7 @@ assert result.allowed == True
 
 result = fence.validate("delete", "file.txt")
 assert result.allowed == False
-assert "blocked" in result.reasons[0].lower()
+assert "delete" in result.reasons[0].lower()
 
 print("Integration tests passed!")
 ```

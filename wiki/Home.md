@@ -80,4 +80,18 @@ Automatically kills agents that:
 pip install runtime-fence
 ```
 
-See [Installation](Installation) for detailed instructions.
+Then:
+
+```python
+from runtime_fence import RuntimeFence, FenceConfig
+
+fence = RuntimeFence(FenceConfig(
+    agent_id="my-agent",
+    blocked_actions=["delete", "exec"],
+    spending_limit=100.0
+))
+
+result = fence.validate("read", "document.txt")
+```
+
+See [Quick Start](Quick-Start) for full walkthrough.

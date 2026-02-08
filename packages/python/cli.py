@@ -168,7 +168,7 @@ def cmd_scan(args):
 
 def cmd_test(args):
     """Run a quick test of the fence."""
-    from runtime_fence import RuntimeFence, FenceConfig
+    from runtime_fence import RuntimeFence, FenceConfig, RiskLevel
     
     print("Testing Runtime Fence...")
     print()
@@ -177,7 +177,8 @@ def cmd_test(args):
         agent_id="test",
         offline_mode=True,
         blocked_actions=["delete", "exec"],
-        blocked_targets=["production", ".env"]
+        blocked_targets=["production", ".env"],
+        risk_threshold=RiskLevel.MEDIUM
     )
     fence = RuntimeFence(config)
     

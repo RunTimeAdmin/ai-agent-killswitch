@@ -5,7 +5,7 @@ Get $KILLSWITCH running in under 5 minutes.
 ## 1. Install
 
 ```bash
-pip install killswitch-agent
+pip install runtime-fence
 ```
 
 ## 2. Create a Fence

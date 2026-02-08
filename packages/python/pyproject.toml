@@ -63,15 +63,14 @@ Repository = "https://github.com/Protocol14019/ai-agent-killswitch"
 Issues = "https://github.com/Protocol14019/ai-agent-killswitch/issues"
 
 [project.scripts]
-fence = "runtime_fence.cli:main"
-runtime-fence = "runtime_fence.cli:main"
+fence = "cli:main"
+runtime-fence = "cli:main"
 
 [project.gui-scripts]
-fence-tray = "runtime_fence.tray:main"
+fence-tray = "fence_tray:main"
 
-[tool.setuptools.packages.find]
-where = ["."]
-include = ["runtime_fence*"]
+[tool.setuptools]
+py-modules = ["runtime_fence", "cli", "alerts", "agent_scanner", "fence_proxy", "fence_tray", "safe_resume"]
 
 [tool.setuptools.package-data]
 runtime_fence = ["*.json", "*.yaml"]
